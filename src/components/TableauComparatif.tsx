@@ -8,15 +8,18 @@ import {
   TableRow,
   Typography,
   useTheme,
+  Box,
 } from '@mui/material';
 import { SimulationScenario } from '../types/simulation';
 
 interface TableauComparatifProps {
   scenarios: SimulationScenario[];
   capitalInitial: number;
+  age: number;
+  ageMax: number;
 }
 
-export default function TableauComparatif({ scenarios, capitalInitial }: TableauComparatifProps) {
+export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax }: TableauComparatifProps) {
   const theme = useTheme();
 
   const formatCurrency = (value: number) => {
@@ -72,17 +75,25 @@ export default function TableauComparatif({ scenarios, capitalInitial }: Tableau
           background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
         }}
       >
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            color: theme.palette.primary.main,
-            fontWeight: 'bold',
-            mb: 3
-          }}
-        >
-          Comparatif des scénarios
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              color: theme.palette.primary.main,
+              fontWeight: 'bold',
+            }}
+          >
+            Comparatif des scénarios
+          </Typography>
+          <Typography 
+            variant="subtitle1"
+            sx={{ 
+              color: theme.palette.text.secondary,
+            }}
+          >
+            Durée de placement maximum : {ageMax - age} ans
+          </Typography>
+        </Box>
         <TableContainer>
           <Table>
             <TableHead>

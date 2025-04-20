@@ -140,16 +140,21 @@ function App() {
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <img src={logo} alt="Swiss Financial Advice" style={{ height: '60px', marginRight: '20px' }} />
+          <Box 
+            component="img" 
+            src={logo} 
+            alt="Swiss Financial Advice" 
+            sx={{ 
+              height: '90px',
+              marginRight: '20px',
+              objectFit: 'contain'
+            }} 
+          />
           <Typography variant="h4" component="h1">
-            Simulateur 2e Pilier
+            Mon Compte Libre Passage
           </Typography>
         </Box>
         
-        <Typography variant="subtitle1" gutterBottom>
-          Durée de placement maximum : {CONSTANTS.AGE_MAX - age} ans
-        </Typography>
-
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={activeTab} onChange={handleTabChange}>
             <Tab label="Simulation" />

@@ -9,7 +9,10 @@ export interface SimulationResult {
   capitalFinal: number;
   interetsCumules: number;
   fraisEntree: number;
-  evolutionCapital: { annee: number; capital: number; }[];
+  evolutionCapital: Array<{
+    annee: number;
+    capital: number;
+  }>;
 }
 
 export interface SimulationScenario {

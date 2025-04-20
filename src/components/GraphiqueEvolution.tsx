@@ -78,7 +78,7 @@ export default function GraphiqueEvolution({ scenarios }: GraphiqueEvolutionProp
           />
           <Legend />
           {scenarios
-            .sort((a, b) => (a.nom === 'Compte Cash' ? 1 : -1))
+            .sort((a) => (a.nom === 'Compte Cash' ? 1 : -1))
             .map((scenario) => (
             <Line
               key={scenario.nom}

@@ -7,19 +7,16 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Box,
   useTheme,
 } from '@mui/material';
 import { SimulationScenario } from '../types/simulation';
 
 interface TableauComparatifProps {
   scenarios: SimulationScenario[];
-  age: number;
-  ageMax: number;
   capitalInitial: number;
 }
 
-export default function TableauComparatif({ scenarios, age, ageMax, capitalInitial }: TableauComparatifProps) {
+export default function TableauComparatif({ scenarios, capitalInitial }: TableauComparatifProps) {
   const theme = useTheme();
 
   const formatCurrency = (value: number) => {
@@ -99,7 +96,7 @@ export default function TableauComparatif({ scenarios, age, ageMax, capitalIniti
             </TableHead>
             <TableBody>
               {scenarios
-                .sort((a, b) => (a.nom === 'Compte Cash' ? -1 : 1))
+                .sort((a, _) => (a.nom === 'Compte Cash' ? -1 : 1))
                 .map((scenario) => (
                 <TableRow 
                   key={scenario.nom}

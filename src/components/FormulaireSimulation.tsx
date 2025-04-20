@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import {
-  Box,
   TextField,
   Button,
   Paper,
   Typography,
-  Slider,
-  Grid,
+  Box,
 } from '@mui/material';
 import { SimulationInput } from '../types/simulation';
 
@@ -60,92 +58,81 @@ export default function FormulaireSimulation({
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-CH', {
-      style: 'currency',
-      currency: 'CHF',
-    }).format(value);
-  };
-
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
       <Typography variant="h6" gutterBottom>
         Paramètres de simulation
       </Typography>
       <form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Âge actuel"
-              value={input.age}
-              onChange={(e) =>
-                onInputChange({ ...input, age: Number(e.target.value) })
-              }
-              error={!!errors.age}
-              helperText={errors.age}
-              inputProps={{
-                min: constants.AGE_MIN,
-                max: constants.AGE_MAX,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Capital 2e pilier"
-              value={input.capital}
-              onChange={(e) =>
-                onInputChange({ ...input, capital: Number(e.target.value) })
-              }
-              error={!!errors.capital}
-              helperText={errors.capital}
-              InputProps={{
-                startAdornment: 'CHF',
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
+          <TextField
+            fullWidth
+            type="number"
+            label="Âge actuel"
+            value={input.age}
+            onChange={(e) =>
+              onInputChange({ ...input, age: Number(e.target.value) })
+            }
+            error={!!errors.age}
+            helperText={errors.age}
+            inputProps={{
+              min: constants.AGE_MIN,
+              max: constants.AGE_MAX,
+            }}
+          />
+          <TextField
+            fullWidth
+            type="number"
+            label="Capital 2e pilier"
+            value={input.capital}
+            onChange={(e) =>
+              onInputChange({ ...input, capital: Number(e.target.value) })
+            }
+            error={!!errors.capital}
+            helperText={errors.capital}
+            InputProps={{
+              startAdornment: 'CHF',
+            }}
+          />
+          <Box sx={{ gridColumn: '1 / -1' }}>
             <Typography gutterBottom>
               Taux de rendement des banques partenaires
             </Typography>
-            <Slider
+            <TextField
+              fullWidth
+              type="number"
               value={input.tauxRendementBanque * 100}
-              onChange={(_, value) =>
+              onChange={(e) =>
                 onInputChange({
                   ...input,
-                  tauxRendementBanque: (value as number) / 100,
+                  tauxRendementBanque: Number(e.target.value) / 100,
                 })
               }
-              min={0}
-              max={10}
-              step={0.1}
-              valueLabelDisplay="auto"
-              valueLabelFormat={(value) => `${value}%`}
+              InputProps={{
+                endAdornment: '%',
+              }}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Box>
+          <Box sx={{ gridColumn: '1 / -1' }}>
             <Typography gutterBottom>
               Rabais partenaire sur les frais d'entrée
             </Typography>
-            <Slider
+            <TextField
+              fullWidth
+              type="number"
               value={input.rabaisPartenaire * 100}
-              onChange={(_, value) =>
+              onChange={(e) =>
                 onInputChange({
                   ...input,
-                  rabaisPartenaire: (value as number) / 100,
+                  rabaisPartenaire: Number(e.target.value) / 100,
                 })
               }
-              min={0}
-              max={100}
-              step={5}
-              valueLabelDisplay="auto"
-              valueLabelFormat={(value) => `${value}%`}
+              InputProps={{
+                endAdornment: '%',
+              }}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Box>
+          <Box sx={{ gridColumn: '1 / -1' }}>
             <Button
               type="submit"
               variant="contained"
@@ -155,8 +142,8 @@ export default function FormulaireSimulation({
             >
               Calculer la simulation
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </form>
     </Paper>
   );

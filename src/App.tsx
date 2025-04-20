@@ -87,7 +87,9 @@ function App() {
     );
 
     const scenarioProfil = calculerScenario(
-      `Profil ${profilSelectionne.charAt(0) + profilSelectionne.slice(1).toLowerCase()}`,
+      profilSelectionne === 'EQUILIBRE' ? 'Allier sécurité et rendement' :
+      profilSelectionne === 'CROISSANCE' ? 'Faire croître mon capital' :
+      'Placement dynamique',
       tauxRendement[profilSelectionne === 'EQUILIBRE' ? 'FAIBLE' : profilSelectionne === 'CROISSANCE' ? 'MOYEN' : 'ELEVE'],
       capitalInitial,
       anneesRestantes,
@@ -200,9 +202,9 @@ function App() {
                     label="Profil d'investissement"
                     onChange={(e) => setProfilSelectionne(e.target.value as ProfilType)}
                   >
-                    <MenuItem value="EQUILIBRE">Profil Équilibre</MenuItem>
-                    <MenuItem value="CROISSANCE">Profil Croissance</MenuItem>
-                    <MenuItem value="DYNAMIQUE">Profil Dynamique</MenuItem>
+                    <MenuItem value="EQUILIBRE">Allier sécurité et rendement</MenuItem>
+                    <MenuItem value="CROISSANCE">Faire croître mon capital</MenuItem>
+                    <MenuItem value="DYNAMIQUE">Placement dynamique</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>

@@ -67,7 +67,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         <Grid item xs={12}>
           <Box sx={{ mb: 2 }}>
             <Typography gutterBottom>
-              Risque Faible
+              Allier sécurité et rendement
             </Typography>
             <Slider
               value={tauxActuels.FAIBLE * 100}
@@ -88,7 +88,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         <Grid item xs={12}>
           <Box sx={{ mb: 2 }}>
             <Typography gutterBottom>
-              Risque Moyen
+              Faire croître mon capital
             </Typography>
             <Slider
               value={tauxActuels.MOYEN * 100}
@@ -109,7 +109,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         <Grid item xs={12}>
           <Box sx={{ mb: 2 }}>
             <Typography gutterBottom>
-              Risque Élevé
+              Placement dynamique
             </Typography>
             <Slider
               value={tauxActuels.ELEVE * 100}

@@ -5,6 +5,7 @@ import TableauComparatif from './components/TableauComparatif'
 import GraphiqueEvolution from './components/GraphiqueEvolution'
 import ConfigurationTaux from './components/ConfigurationTaux'
 import { SimulationInput, SimulationScenario } from './types/simulation'
+import logo from './assets/images/logo.png'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -138,9 +139,12 @@ function App() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Simulateur 2e Pilier
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+          <img src={logo} alt="Swiss Financial Advice" style={{ height: '60px', marginRight: '20px' }} />
+          <Typography variant="h4" component="h1">
+            Simulateur 2e Pilier
+          </Typography>
+        </Box>
         
         <Typography variant="subtitle1" gutterBottom>
           Durée de placement maximum : {CONSTANTS.AGE_MAX - age} ans

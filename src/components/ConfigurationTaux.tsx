@@ -1,0 +1,139 @@
+import {
+  Paper,
+  Typography,
+  Slider,
+  Grid,
+  Box,
+} from '@mui/material';
+
+interface ConfigurationTauxProps {
+  tauxActuels: {
+    CASH: number;
+    FAIBLE: number;
+    MOYEN: number;
+    ELEVE: number;
+  };
+  onTauxChange: (nouveauxTaux: ConfigurationTauxProps['tauxActuels']) => void;
+}
+
+export default function ConfigurationTaux({ tauxActuels, onTauxChange }: ConfigurationTauxProps) {
+  const handleChange = (profil: keyof typeof tauxActuels) => (event: Event, newValue: number | number[]) => {
+    const nouveauxTaux = {
+      ...tauxActuels,
+      [profil]: (newValue as number) / 100
+    };
+    onTauxChange(nouveauxTaux);
+  };
+
+  const formatPercentage = (value: number) => {
+    return `${value.toFixed(1)}%`;
+  };
+
+  return (
+    <Paper 
+      elevation={3} 
+      sx={{ 
+        p: 3,
+        borderRadius: 2,
+        background: 'linear-gradient(to right bottom, #ffffff, #f5f5f5)',
+      }}
+    >
+      <Typography variant="h6" gutterBottom sx={{ mb: 3, color: 'primary.main', fontWeight: 'bold' }}>
+        Configuration des taux de rendement
+      </Typography>
+
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom>
+              Compte Cash
+            </Typography>
+            <Slider
+              value={tauxActuels.CASH * 100}
+              onChange={handleChange('CASH')}
+              min={0}
+              max={2}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 2, label: '2%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom>
+              Risque Faible
+            </Typography>
+            <Slider
+              value={tauxActuels.FAIBLE * 100}
+              onChange={handleChange('FAIBLE')}
+              min={0}
+              max={4}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 4, label: '4%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom>
+              Risque Moyen
+            </Typography>
+            <Slider
+              value={tauxActuels.MOYEN * 100}
+              onChange={handleChange('MOYEN')}
+              min={0}
+              max={6}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 6, label: '6%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom>
+              Risque Élevé
+            </Typography>
+            <Slider
+              value={tauxActuels.ELEVE * 100}
+              onChange={handleChange('ELEVE')}
+              min={0}
+              max={8}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 8, label: '8%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="caption" color="text.secondary">
+          Ajustez les curseurs pour modifier les taux de rendement de chaque profil de risque.
+          Les modifications seront immédiatement reflétées dans la simulation.
+        </Typography>
+      </Box>
+    </Paper>
+  );
+} 

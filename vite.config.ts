@@ -10,4 +10,11 @@ export default defineConfig({
     minify: 'terser',
     target: 'es2015',
   },
+  server: {
+    fs: {
+      strict: false
+    },
+    middlewareMode: false
+  },
+  assetsInclude: ['**/*.pdf']
 })

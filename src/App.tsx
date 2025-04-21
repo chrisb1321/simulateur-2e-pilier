@@ -6,6 +6,7 @@ import GraphiqueEvolution from './components/GraphiqueEvolution'
 import ConfigurationTaux from './components/ConfigurationTaux'
 import { SimulationInput, SimulationScenario } from './types/simulation'
 import logo from './assets/images/logo.png'
+import LoadingSimulation from './components/LoadingSimulation'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -58,6 +59,7 @@ function App() {
   const [capital, setCapital] = useState<string>('100000');
   const [profilSelectionne, setProfilSelectionne] = useState<ProfilType>('EQUILIBRE');
   const [scenarios, setScenarios] = useState<SimulationScenario[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [tauxRendement, setTauxRendement] = useState({
     CASH: CONSTANTS.TAUX_RENDEMENT.CASH,
     FAIBLE: CONSTANTS.TAUX_RENDEMENT.EQUILIBRE,
@@ -74,29 +76,50 @@ function App() {
   };
 
   const calculerSimulation = () => {
-    const anneesRestantes = CONSTANTS.AGE_MAX - age;
-    const capitalInitial = parseFloat(capital.replace(/[^0-9.-]+/g, ''));
-    const fraisEntree = CONSTANTS.FRAIS_ENTREE;
+    setIsLoading(true);
+    setScenarios([]); // Réinitialiser les scénarios pendant le chargement
 
-    const scenarioCash = calculerScenario(
-      'Compte Cash',
-      tauxRendement.CASH,
-      capitalInitial,
-      anneesRestantes,
-      0
-    );
+    // Simuler un délai de chargement pour montrer l'animation
+    setTimeout(() => {
+      const anneesRestantes = CONSTANTS.AGE_MAX - age;
+      const capitalInitial = parseFloat(capital.replace(/[^0-9.-]+/g, ''));
+      const fraisEntree = CONSTANTS.FRAIS_ENTREE;
 
-    const scenarioProfil = calculerScenario(
-      profilSelectionne === 'EQUILIBRE' ? 'Allier sécurité et rendement' :
-      profilSelectionne === 'CROISSANCE' ? 'Faire croître mon capital' :
-      'Placement dynamique',
-      tauxRendement[profilSelectionne === 'EQUILIBRE' ? 'FAIBLE' : profilSelectionne === 'CROISSANCE' ? 'MOYEN' : 'ELEVE'],
-      capitalInitial,
-      anneesRestantes,
-      fraisEntree
-    );
+      const scenarioCash = calculerScenario(
+        'Compte Cash',
+        tauxRendement.CASH,
+        capitalInitial,
+        anneesRestantes,
+        0
+      );
 
-    setScenarios([scenarioCash, scenarioProfil]);
+      const scenarioEquilibre = calculerScenario(
+        'Allier sécurité et rendement',
+        tauxRendement.FAIBLE,
+        capitalInitial,
+        anneesRestantes,
+        fraisEntree
+      );
+
+      const scenarioCroissance = calculerScenario(
+        'Faire croître mon capital',
+        tauxRendement.MOYEN,
+        capitalInitial,
+        anneesRestantes,
+        fraisEntree
+      );
+
+      const scenarioDynamique = calculerScenario(
+        'Placement dynamique',
+        tauxRendement.ELEVE,
+        capitalInitial,
+        anneesRestantes,
+        fraisEntree
+      );
+
+      setScenarios([scenarioCash, scenarioEquilibre, scenarioCroissance, scenarioDynamique]);
+      setIsLoading(false);
+    }, 5000); // Délai de 5 secondes
   };
 
   const calculerScenario = (
@@ -152,8 +175,15 @@ function App() {
               objectFit: 'contain'
             }} 
           />
-          <Typography variant="h4" component="h1">
-            Mon Compte Libre Passage
+          <Typography 
+            variant="h5" 
+            component="h1" 
+            sx={{ 
+              fontSize: '1.8rem',
+              fontWeight: 500
+            }}
+          >
+            Comparateur 2ème pilier
           </Typography>
         </Box>
         
@@ -165,6 +195,25 @@ function App() {
         </Box>
 
         <TabPanel value={activeTab} index={0}>
+          <Box sx={{ mb: 3 }}>
+            <Button
+              variant="outlined"
+              size="large"
+              href="https://forms.zohopublic.eu/swissfinancial1/form/Mandatderecherche/formperma/3jgRf4_IBYaeKKVqF55iy2gBp8Gwz4S2P8PGgxMmi1c?zf_pf_id=956584"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontSize: '1rem',
+                fontWeight: 500,
+                px: 4
+              }}
+            >
+              Recherche des avoirs LPP
+            </Button>
+          </Box>
+
           <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
             <Typography variant="h5" gutterBottom>
               Paramètres de simulation
@@ -220,15 +269,21 @@ function App() {
             </Box>
           </Paper>
 
-          {scenarios.length > 0 && (
+          <LoadingSimulation isLoading={isLoading} />
+
+          {scenarios.length > 0 && !isLoading && (
             <>
               <TableauComparatif 
                 scenarios={scenarios} 
                 age={age}
                 ageMax={CONSTANTS.AGE_MAX}
                 capitalInitial={parseFloat(capital.replace(/[^0-9.-]+/g, ''))}
+                profilSelectionne={profilSelectionne}
               />
-              <GraphiqueEvolution scenarios={scenarios} />
+              <GraphiqueEvolution 
+                scenarios={scenarios} 
+                profilSelectionne={profilSelectionne}
+              />
             </>
           )}
         </TabPanel>

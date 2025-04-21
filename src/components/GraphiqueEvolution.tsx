@@ -21,9 +21,10 @@ import { SimulationScenario } from '../types/simulation';
 
 interface GraphiqueEvolutionProps {
   scenarios: SimulationScenario[];
+  profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
 }
 
-export default function GraphiqueEvolution({ scenarios }: GraphiqueEvolutionProps) {
+export default function GraphiqueEvolution({ scenarios, profilSelectionne }: GraphiqueEvolutionProps) {
   const theme = useTheme();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-CH', {
@@ -54,7 +55,34 @@ export default function GraphiqueEvolution({ scenarios }: GraphiqueEvolutionProp
   };
 
   const getLineColor = (scenarioNom: string) => {
-    return scenarioNom === 'Compte Cash' ? '#1976d2' : '#43a047';
+    switch(scenarioNom) {
+      case 'Compte Cash':
+        return '#1976d2'; // Bleu
+      case 'Allier sécurité et rendement':
+        return '#43a047'; // Vert
+      case 'Faire croître mon capital':
+        return '#ff9800'; // Orange
+      case 'Placement dynamique':
+        return '#e91e63'; // Rose
+      default:
+        return '#1976d2';
+    }
+  };
+
+  const getLineStyle = (scenarioNom: string) => {
+    const isSelected = 
+      (scenarioNom === 'Allier sécurité et rendement' && profilSelectionne === 'EQUILIBRE') ||
+      (scenarioNom === 'Faire croître mon capital' && profilSelectionne === 'CROISSANCE') ||
+      (scenarioNom === 'Placement dynamique' && profilSelectionne === 'DYNAMIQUE');
+
+    const color = getLineColor(scenarioNom);
+    
+    return {
+      strokeWidth: isSelected ? 4 : 2,
+      opacity: isSelected ? 1 : 0.3,
+      filter: isSelected ? `drop-shadow(0 0 6px ${color})` : 'none',
+      cursor: 'pointer'
+    };
   };
 
   return (
@@ -65,7 +93,7 @@ export default function GraphiqueEvolution({ scenarios }: GraphiqueEvolutionProp
         </Typography>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={prepareData()}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
             <XAxis
               dataKey="annee"
               label={{
@@ -80,19 +108,48 @@ export default function GraphiqueEvolution({ scenarios }: GraphiqueEvolutionProp
             <Tooltip
               formatter={(value: number) => formatCurrency(value)}
               labelFormatter={(label) => `Année ${label}`}
+              contentStyle={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: '8px',
+                border: 'none',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+              }}
             />
-            <Legend />
+            <Legend 
+              verticalAlign="top"
+              height={36}
+            />
             {scenarios
               .sort((a) => (a.nom === 'Compte Cash' ? 1 : -1))
-              .map((scenario) => (
-              <Line
-                key={scenario.nom}
-                type="monotone"
-                dataKey={scenario.nom}
-                stroke={getLineColor(scenario.nom)}
-                strokeWidth={2}
-              />
-            ))}
+              .map((scenario) => {
+                const lineStyle = getLineStyle(scenario.nom);
+                const color = getLineColor(scenario.nom);
+                return (
+                  <Line
+                    key={scenario.nom}
+                    type="monotone"
+                    dataKey={scenario.nom}
+                    stroke={color}
+                    strokeWidth={lineStyle.strokeWidth}
+                    opacity={lineStyle.opacity}
+                    dot={{ 
+                      r: lineStyle.strokeWidth === 4 ? 4 : 2,
+                      strokeWidth: lineStyle.strokeWidth === 4 ? 2 : 1,
+                      fill: color,
+                      filter: lineStyle.filter
+                    }}
+                    activeDot={{
+                      r: lineStyle.strokeWidth === 4 ? 6 : 4,
+                      strokeWidth: 2,
+                      filter: lineStyle.filter
+                    }}
+                    style={{
+                      filter: lineStyle.filter,
+                      transition: 'all 0.3s ease'
+                    }}
+                  />
+                );
+              })}
           </LineChart>
         </ResponsiveContainer>
       </Paper>

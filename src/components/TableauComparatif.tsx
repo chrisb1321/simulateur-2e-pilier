@@ -17,9 +17,10 @@ interface TableauComparatifProps {
   capitalInitial: number;
   age: number;
   ageMax: number;
+  profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
 }
 
-export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax }: TableauComparatifProps) {
+export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax, profilSelectionne }: TableauComparatifProps) {
   const theme = useTheme();
 
   const formatCurrency = (value: number) => {
@@ -39,13 +40,27 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     }).format(value);
   };
 
+  // Filtrer les scénarios pour n'afficher que le Compte Cash et le profil sélectionné
+  const scenarioCash = scenarios.find(s => s.nom === 'Compte Cash');
+  const scenarioSelectionne = scenarios.find(s => {
+    switch(profilSelectionne) {
+      case 'EQUILIBRE':
+        return s.nom === 'Allier sécurité et rendement';
+      case 'CROISSANCE':
+        return s.nom === 'Faire croître mon capital';
+      case 'DYNAMIQUE':
+        return s.nom === 'Placement dynamique';
+      default:
+        return false;
+    }
+  });
+
+  const scenariosAffichés = [scenarioCash, scenarioSelectionne].filter(s => s !== undefined) as SimulationScenario[];
+
   const calculerDifferences = () => {
-    const scenarioCash = scenarios.find(s => s.nom === 'Compte Cash');
-    const scenarioProfil = scenarios.find(s => s.nom !== 'Compte Cash');
+    if (!scenarioCash || !scenarioSelectionne) return null;
 
-    if (!scenarioCash || !scenarioProfil) return null;
-
-    const interetsCumules = scenarioProfil.resultat.interetsCumules;
+    const interetsCumules = scenarioSelectionne.resultat.interetsCumules;
     const fraisEntree = capitalInitial * 0.03; // 3% du capital initial
     const estimationNette = interetsCumules - fraisEntree;
 
@@ -106,9 +121,7 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
               </TableRow>
             </TableHead>
             <TableBody>
-              {scenarios
-                .sort((a, _) => (a.nom === 'Compte Cash' ? -1 : 1))
-                .map((scenario) => (
+              {scenariosAffichés.map((scenario) => (
                 <TableRow 
                   key={scenario.nom}
                   hover
@@ -122,7 +135,7 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                     scope="row"
                     sx={{ 
                       fontWeight: 500,
-                      color: scenario.nom === 'Banque Partenaire' ? theme.palette.primary.main : theme.palette.text.primary
+                      color: scenario.nom === 'Compte Cash' ? theme.palette.text.primary : theme.palette.primary.main
                     }}
                   >
                     {scenario.nom}

@@ -12,6 +12,8 @@ interface ConfigurationTauxProps {
     FAIBLE: number;
     MOYEN: number;
     ELEVE: number;
+    FRAIS_ENTREE_MARCHE: number;
+    FRAIS_ENTREE_SFA: number;
   };
   onTauxChange: (nouveauxTaux: ConfigurationTauxProps['tauxActuels']) => void;
 }
@@ -33,20 +35,20 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
     <Paper 
       elevation={3} 
       sx={{ 
-        p: 3,
+        p: 5,
         borderRadius: 2,
         background: 'linear-gradient(to right bottom, #ffffff, #f5f5f5)',
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ mb: 3, color: 'primary.main', fontWeight: 'bold' }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 5, color: 'primary.main', fontWeight: 'bold' }}>
         Configuration des taux de rendement
       </Typography>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={8}>
         <Grid item xs={12}>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography gutterBottom>
-              Compte Cash
+              Compte rémunéré
             </Typography>
             <Slider
               value={tauxActuels.CASH * 100}
@@ -65,7 +67,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography gutterBottom>
               Allier sécurité et rendement
             </Typography>
@@ -86,7 +88,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography gutterBottom>
               Faire croître mon capital
             </Typography>
@@ -107,7 +109,7 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography gutterBottom>
               Placement dynamique
             </Typography>
@@ -126,9 +128,51 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
             />
           </Box>
         </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 4 }}>
+            <Typography gutterBottom>
+              Droits d'entrée 3% (moy. du marché)
+            </Typography>
+            <Slider
+              value={tauxActuels.FRAIS_ENTREE_MARCHE * 100}
+              onChange={handleChange('FRAIS_ENTREE_MARCHE')}
+              min={0}
+              max={3}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 3, label: '3%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 4 }}>
+            <Typography gutterBottom>
+              Droits d'entrée avec SFA
+            </Typography>
+            <Slider
+              value={tauxActuels.FRAIS_ENTREE_SFA * 100}
+              onChange={handleChange('FRAIS_ENTREE_SFA')}
+              min={0}
+              max={3}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 3, label: '3%' },
+              ]}
+            />
+          </Box>
+        </Grid>
       </Grid>
 
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: 5 }}>
         <Typography variant="caption" color="text.secondary">
           Ajustez les curseurs pour modifier les taux de rendement de chaque profil de risque.
           Les modifications seront immédiatement reflétées dans la simulation.

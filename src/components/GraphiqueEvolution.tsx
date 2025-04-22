@@ -56,7 +56,7 @@ export default function GraphiqueEvolution({ scenarios, profilSelectionne }: Gra
 
   const getLineColor = (scenarioNom: string) => {
     switch(scenarioNom) {
-      case 'Compte Cash':
+      case 'Compte rémunéré':
         return '#1976d2'; // Bleu
       case 'Allier sécurité et rendement':
         return '#43a047'; // Vert
@@ -120,7 +120,7 @@ export default function GraphiqueEvolution({ scenarios, profilSelectionne }: Gra
               height={36}
             />
             {scenarios
-              .sort((a) => (a.nom === 'Compte Cash' ? 1 : -1))
+              .sort((a) => (a.nom === 'Compte rémunéré' ? 1 : -1))
               .map((scenario) => {
                 const lineStyle = getLineStyle(scenario.nom);
                 const color = getLineColor(scenario.nom);

@@ -27,4 +27,6 @@ export interface TauxRendement {
   FAIBLE: number;
   MOYEN: number;
   ELEVE: number;
+  FRAIS_ENTREE_MARCHE: number;
+  FRAIS_ENTREE_SFA: number;
 } 

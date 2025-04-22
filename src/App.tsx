@@ -65,6 +65,8 @@ function App() {
     FAIBLE: CONSTANTS.TAUX_RENDEMENT.EQUILIBRE,
     MOYEN: CONSTANTS.TAUX_RENDEMENT.CROISSANCE,
     ELEVE: CONSTANTS.TAUX_RENDEMENT.DYNAMIQUE,
+    FRAIS_ENTREE_MARCHE: CONSTANTS.FRAIS_ENTREE,
+    FRAIS_ENTREE_SFA: CONSTANTS.FRAIS_ENTREE * 0.5, // 50% des frais du marché par défaut
   });
 
   const handleTauxChange = (nouveauxTaux: typeof tauxRendement) => {
@@ -83,10 +85,9 @@ function App() {
     setTimeout(() => {
       const anneesRestantes = CONSTANTS.AGE_MAX - age;
       const capitalInitial = parseFloat(capital.replace(/[^0-9.-]+/g, ''));
-      const fraisEntree = CONSTANTS.FRAIS_ENTREE;
 
       const scenarioCash = calculerScenario(
-        'Compte Cash',
+        'Compte rémunéré',
         tauxRendement.CASH,
         capitalInitial,
         anneesRestantes,
@@ -98,7 +99,7 @@ function App() {
         tauxRendement.FAIBLE,
         capitalInitial,
         anneesRestantes,
-        fraisEntree
+        tauxRendement.FRAIS_ENTREE_SFA
       );
 
       const scenarioCroissance = calculerScenario(
@@ -106,7 +107,7 @@ function App() {
         tauxRendement.MOYEN,
         capitalInitial,
         anneesRestantes,
-        fraisEntree
+        tauxRendement.FRAIS_ENTREE_SFA
       );
 
       const scenarioDynamique = calculerScenario(
@@ -114,7 +115,7 @@ function App() {
         tauxRendement.ELEVE,
         capitalInitial,
         anneesRestantes,
-        fraisEntree
+        tauxRendement.FRAIS_ENTREE_SFA
       );
 
       setScenarios([scenarioCash, scenarioEquilibre, scenarioCroissance, scenarioDynamique]);
@@ -195,7 +196,7 @@ function App() {
         </Box>
 
         <TabPanel value={activeTab} index={0}>
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 5 }}>
             <Button
               variant="outlined"
               size="large"

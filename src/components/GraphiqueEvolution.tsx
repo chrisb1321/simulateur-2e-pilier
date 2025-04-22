@@ -87,7 +87,11 @@ export default function GraphiqueEvolution({ scenarios, profilSelectionne }: Gra
 
   return (
     <>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+      <Paper elevation={3} sx={{ 
+        p: 3, 
+        mb: 3,
+        mt: { xs: 8, sm: 10, md: 12 }
+      }}>
         <Typography variant="h6" gutterBottom>
           Évolution du capital dans le temps
         </Typography>

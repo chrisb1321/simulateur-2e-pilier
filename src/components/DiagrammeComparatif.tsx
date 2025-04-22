@@ -83,12 +83,6 @@ export default function DiagrammeComparatif({
       percentage: formatPercentage(interetsCumules, total)
     },
     { 
-      name: 'Droits d\'entrée (marché)', 
-      value: fraisEntreeMarche, 
-      color: theme.palette.error.main,
-      percentage: formatPercentage(fraisEntreeMarche, total)
-    },
-    { 
       name: 'Droits d\'entrée (SFA)', 
       value: fraisEntreeSFA, 
       color: theme.palette.warning.main,
@@ -197,7 +191,7 @@ export default function DiagrammeComparatif({
                 {entry.value}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {formatCurrency(data[index].value)}
+                {formatPercentage(data[index].value, total)}
               </Typography>
             </Box>
           </Box>
@@ -264,7 +258,7 @@ export default function DiagrammeComparatif({
           }
         }}
       >
-        Répartition des montants
+        Analyse par répartition des montants
       </Typography>
 
       <Grid container spacing={3}>
@@ -387,96 +381,130 @@ export default function DiagrammeComparatif({
             </Typography>
 
             <Box>
-              <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{
-                  transition: 'all 0.2s ease',
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 1.5,
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    color: theme.palette.primary.main,
+                    backgroundColor: `${theme.palette.primary.main}15`,
+                    transform: 'translateX(8px) scale(1.02)',
+                    boxShadow: theme.shadows[2],
                   }
                 }}
               >
-                Capital total (avec intérêts)
-              </Typography>
-              <Typography 
-                variant="h6"
-                sx={{
-                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                    filter: 'brightness(1.1)',
-                  }
-                }}
-              >
-                {formatCurrency(total)}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ borderColor: 'rgba(0,0,0,0.1)' }} />
-
-            <Box>
-              <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    color: theme.palette.error.main,
-                  }
-                }}
-              >
-                Après frais du marché
-              </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{
-                  color: theme.palette.error.main,
-                  textShadow: '0 0 1px rgba(244,67,54,0.1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                    textShadow: '0 0 8px rgba(244,67,54,0.3)',
-                  }
-                }}
-              >
-                {formatCurrency(totalAvecFraisMarche)}
-              </Typography>
+                <Box 
+                  sx={{ 
+                    width: 12, 
+                    height: 12, 
+                    borderRadius: '50%',
+                    backgroundColor: theme.palette.primary.main,
+                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.2)',
+                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.primary.main}`,
+                    }
+                  }} 
+                />
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    Capital initial
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatCurrency(capitalInitial)}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
 
             <Box>
-              <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{
-                  transition: 'all 0.2s ease',
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 1.5,
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    color: theme.palette.success.main,
+                    backgroundColor: `${theme.palette.success.main}15`,
+                    transform: 'translateX(8px) scale(1.02)',
+                    boxShadow: theme.shadows[2],
                   }
                 }}
               >
-                Après frais SFA
-              </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{
-                  color: theme.palette.success.main,
-                  textShadow: '0 0 1px rgba(76,175,80,0.1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                    textShadow: '0 0 8px rgba(76,175,80,0.3)',
-                  }
-                }}
-              >
-                {formatCurrency(totalAvecFraisSFA)}
-              </Typography>
+                <Box 
+                  sx={{ 
+                    width: 12, 
+                    height: 12, 
+                    borderRadius: '50%',
+                    backgroundColor: theme.palette.success.main,
+                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.2)',
+                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.success.main}`,
+                    }
+                  }} 
+                />
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    Intérêts cumulés
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatCurrency(interetsCumules)}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
 
-            <Divider sx={{ borderColor: 'rgba(0,0,0,0.1)' }} />
+            <Box>
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 1.5,
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    backgroundColor: `${theme.palette.text.secondary}15`,
+                    transform: 'translateX(8px) scale(1.02)',
+                    boxShadow: theme.shadows[2],
+                  }
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 12, 
+                    height: 12, 
+                    borderRadius: '50%',
+                    backgroundColor: theme.palette.text.secondary,
+                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.2)',
+                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.text.secondary}`,
+                    }
+                  }} 
+                />
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    Droits d'entrée
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatCurrency(fraisEntreeSFA)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
 
             <Box 
               sx={{ 
@@ -495,13 +523,10 @@ export default function DiagrammeComparatif({
               }}
             >
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Différence en votre faveur
+                Estimation du capital final
               </Typography>
               <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                {formatCurrency(difference)}
-              </Typography>
-              <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                soit {formatPercentage(difference, total)} du capital total
+                {formatCurrency(totalAvecFraisSFA)}
               </Typography>
             </Box>
           </Paper>

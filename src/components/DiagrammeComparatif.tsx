@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, Label } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts';
 import { Paper, Typography, Box, Divider, Grid, keyframes, Button } from '@mui/material';
 import { useTheme } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -83,9 +83,9 @@ export default function DiagrammeComparatif({
       percentage: formatPercentage(interetsCumules, total)
     },
     { 
-      name: 'Droits d\'entrée (SFA)', 
+      name: 'Droits d\'entrée avec SFA', 
       value: fraisEntreeSFA, 
-      color: theme.palette.warning.main,
+      color: theme.palette.grey[700],
       percentage: formatPercentage(fraisEntreeSFA, total)
     },
   ];
@@ -142,73 +142,14 @@ export default function DiagrammeComparatif({
     return null;
   };
 
-  const CustomLegend = ({ payload }: any) => {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {payload.map((entry: any, index: number) => (
-          <Box 
-            key={`legend-${index}`}
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              gap: 1,
-              p: 1.5,
-              borderRadius: 2,
-              cursor: 'pointer',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              '&:hover': {
-                backgroundColor: `${entry.color}15`,
-                transform: 'translateX(8px) scale(1.02)',
-                boxShadow: theme.shadows[2],
-              }
-            }}
-          >
-            <Box 
-              sx={{ 
-                width: 12, 
-                height: 12, 
-                borderRadius: '50%',
-                backgroundColor: entry.color,
-                boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  transform: 'scale(1.2)',
-                  boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${entry.color}`,
-                }
-              }} 
-            />
-            <Box>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  fontWeight: 500,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    color: entry.color,
-                  }
-                }}
-              >
-                {entry.value}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {formatPercentage(data[index].value, total)}
-              </Typography>
-            </Box>
-          </Box>
-        ))}
-      </Box>
-    );
-  };
-
   const getDocumentPath = () => {
-    const basePath = '/documents';
     switch(profilInvestissement) {
       case 'Placement dynamique':
-        return `${basePath}/Placement dynamique - Présentation.pdf`;
+        return '/Placement dynamique - Présentation.pdf';
       case 'Faire croître mon capital':
-        return `${basePath}/Faire croître mon capital - Présentation.pdf`;
+        return '/Faire croître mon capital - Présentation.pdf';
       case 'Allier sécurité et rendement':
-        return `${basePath}/Allier sécurité et rendement - Présentation.pdf`;
+        return '/Allier sécurité et rendement - Présentation.pdf';
       default:
         return '';
     }
@@ -245,6 +186,7 @@ export default function DiagrammeComparatif({
           mb: 4,
           textAlign: 'center',
           position: 'relative',
+          fontSize: '1.5rem',
           '&::after': {
             content: '""',
             position: 'absolute',
@@ -266,11 +208,23 @@ export default function DiagrammeComparatif({
           <Box 
             sx={{ 
               height: 500,
-              position: 'relative'
+              position: 'relative',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': {
+                transform: 'scale(1.05)',
+              }
             }}
           >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                <defs>
+                  <filter id="shadow">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
+                  </filter>
+                  <filter id="shadowHover">
+                    <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.3"/>
+                  </filter>
+                </defs>
                 <Pie
                   data={data}
                   cx="50%"
@@ -284,20 +238,6 @@ export default function DiagrammeComparatif({
                   animationBegin={0}
                   animationDuration={2000}
                   animationEasing="ease-out"
-                  onMouseEnter={(_, index) => {
-                    const sector = document.querySelector(`#pie-sector-${index}`) as HTMLElement;
-                    if (sector) {
-                      sector.style.transform = 'scale(1.1)';
-                      sector.style.transformOrigin = 'center';
-                      sector.style.transition = 'transform 0.3s ease-out';
-                    }
-                  }}
-                  onMouseLeave={(_, index) => {
-                    const sector = document.querySelector(`#pie-sector-${index}`) as HTMLElement;
-                    if (sector) {
-                      sector.style.transform = 'scale(1)';
-                    }
-                  }}
                 >
                   {data.map((entry, index) => (
                     <Cell 
@@ -306,27 +246,27 @@ export default function DiagrammeComparatif({
                       fill={entry.color}
                       strokeWidth={2}
                       stroke={theme.palette.background.paper}
+                      onMouseEnter={(e: React.MouseEvent<SVGElement>) => {
+                        const target = e.target as SVGElement;
+                        target.style.transform = 'scale(1.05)';
+                        target.style.transformOrigin = 'center';
+                        target.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        target.style.filter = 'url(#shadowHover)';
+                      }}
+                      onMouseLeave={(e: React.MouseEvent<SVGElement>) => {
+                        const target = e.target as SVGElement;
+                        target.style.transform = 'scale(1)';
+                        target.style.filter = 'url(#shadow)';
+                      }}
                       style={{
-                        filter: 'drop-shadow(0px 2px 3px rgba(0,0,0,0.2))',
-                        transition: 'all 0.3s ease-out',
                         cursor: 'pointer',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        filter: 'url(#shadow)'
                       }}
                     />
                   ))}
                 </Pie>
-                <Tooltip 
-                  content={<CustomTooltip />}
-                  animationDuration={200}
-                />
-                <Legend 
-                  content={<CustomLegend />}
-                  layout="vertical" 
-                  align="right"
-                  verticalAlign="middle"
-                  wrapperStyle={{
-                    paddingLeft: '20px',
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </Box>
@@ -334,16 +274,16 @@ export default function DiagrammeComparatif({
 
         <Grid item xs={12} md={4}>
           <Paper 
-            elevation={2}
+            elevation={2} 
             sx={{ 
-              p: 3, 
+              p: 2.5,
+              borderRadius: 2,
               height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(8px)',
-              transition: 'all 0.3s ease',
+              background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
+              backdropFilter: 'blur(20px)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
               '& > *': {
                 animation: `${slideIn} 0.5s ease-out forwards`,
                 opacity: 0,
@@ -352,11 +292,9 @@ export default function DiagrammeComparatif({
               '& > *:nth-of-type(2)': { animationDelay: '0.2s' },
               '& > *:nth-of-type(3)': { animationDelay: '0.3s' },
               '& > *:nth-of-type(4)': { animationDelay: '0.4s' },
-              '& > *:nth-of-type(5)': { animationDelay: '0.5s' },
-              '& > *:nth-of-type(6)': { animationDelay: '0.6s' },
               '&:hover': {
-                transform: 'translateX(-4px)',
-                boxShadow: theme.shadows[4],
+                transform: 'translateX(-2px)',
+                boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
               }
             }}
           >
@@ -366,166 +304,135 @@ export default function DiagrammeComparatif({
               gutterBottom
               sx={{
                 position: 'relative',
+                mb: 2,
+                fontWeight: 600,
+                fontSize: '1.1rem',
+                letterSpacing: '-0.3px',
+                display: 'inline-block',
                 '&::after': {
                   content: '""',
                   position: 'absolute',
-                  bottom: '-4px',
+                  bottom: '-6px',
                   left: 0,
-                  width: '40px',
+                  width: '100%',
                   height: '2px',
-                  backgroundColor: theme.palette.primary.main,
+                  background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+                  borderRadius: '2px',
                 }
               }}
             >
               Résumé
             </Typography>
 
-            <Box>
-              <Box 
+            {[
+              { label: 'Capital initial', value: capitalInitial, color: theme.palette.primary.main },
+              { label: 'Intérêts cumulés', value: interetsCumules, color: theme.palette.success.main },
+              { label: 'Droits d\'entrée avec SFA', value: fraisEntreeSFA, color: theme.palette.grey[700] }
+            ].map((item, index) => (
+              <Box
+                key={item.label}
                 sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  gap: 1,
-                  p: 1.5,
-                  borderRadius: 2,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.primary.main}15`,
-                    transform: 'translateX(8px) scale(1.02)',
-                    boxShadow: theme.shadows[2],
-                  }
+                  mb: 1.5,
+                  '&:last-child': { mb: 2 }
                 }}
               >
                 <Box 
                   sx={{ 
-                    width: 12, 
-                    height: 12, 
-                    borderRadius: '50%',
-                    backgroundColor: theme.palette.primary.main,
-                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-                    transition: 'all 0.3s ease',
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: 2,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid rgba(0,0,0,0.03)',
+                    boxShadow: '0 1px 8px rgba(0,0,0,0.02)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      transform: 'scale(1.2)',
-                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.primary.main}`,
+                      transform: 'translateX(4px)',
+                      boxShadow: `0 2px 12px ${item.color}10`,
+                      backgroundColor: `${item.color}05`
                     }
-                  }} 
-                />
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    Capital initial
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatCurrency(capitalInitial)}
-                  </Typography>
+                  }}
+                >
+                  <Box 
+                    sx={{ 
+                      width: 12, 
+                      height: 12, 
+                      borderRadius: '50%',
+                      background: `linear-gradient(135deg, ${item.color} 0%, ${item.color}CC 100%)`,
+                      boxShadow: `0 0 0 3px ${item.color}15`
+                    }} 
+                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontWeight: 500,
+                        color: theme.palette.text.primary,
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography 
+                      variant="subtitle1" 
+                      sx={{ 
+                        color: item.color,
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        letterSpacing: '-0.3px'
+                      }}
+                    >
+                      {formatCurrency(item.value)}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-
-            <Box>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  gap: 1,
-                  p: 1.5,
-                  borderRadius: 2,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.success.main}15`,
-                    transform: 'translateX(8px) scale(1.02)',
-                    boxShadow: theme.shadows[2],
-                  }
-                }}
-              >
-                <Box 
-                  sx={{ 
-                    width: 12, 
-                    height: 12, 
-                    borderRadius: '50%',
-                    backgroundColor: theme.palette.success.main,
-                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.2)',
-                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.success.main}`,
-                    }
-                  }} 
-                />
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    Intérêts cumulés
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatCurrency(interetsCumules)}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-
-            <Box>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  gap: 1,
-                  p: 1.5,
-                  borderRadius: 2,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.text.secondary}15`,
-                    transform: 'translateX(8px) scale(1.02)',
-                    boxShadow: theme.shadows[2],
-                  }
-                }}
-              >
-                <Box 
-                  sx={{ 
-                    width: 12, 
-                    height: 12, 
-                    borderRadius: '50%',
-                    backgroundColor: theme.palette.text.secondary,
-                    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.2)',
-                      boxShadow: `0 0 0 3px ${theme.palette.background.paper}, 0 0 8px ${theme.palette.text.secondary}`,
-                    }
-                  }} 
-                />
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    Droits d'entrée
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatCurrency(fraisEntreeSFA)}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+            ))}
 
             <Box 
               sx={{ 
                 p: 2, 
                 borderRadius: 2,
-                background: `linear-gradient(135deg, ${theme.palette.success.light} 0%, ${theme.palette.success.main} 100%)`,
+                background: `linear-gradient(165deg, ${theme.palette.success.light} 0%, ${theme.palette.success.main} 100%)`,
                 color: 'white',
-                boxShadow: '0 4px 12px rgba(76,175,80,0.2)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                cursor: 'pointer',
+                boxShadow: '0 6px 20px rgba(76,175,80,0.2)',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 70%)',
+                },
                 '&:hover': {
-                  transform: 'translateY(-4px) scale(1.02)',
-                  boxShadow: '0 8px 24px rgba(76,175,80,0.3)',
-                  background: `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 24px rgba(76,175,80,0.25)'
                 }
               }}
             >
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  opacity: 0.95,
+                  fontWeight: 500,
+                  mb: 0.5
+                }}
+              >
                 Estimation du capital final
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 700,
+                  letterSpacing: '-0.5px',
+                  textShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                  lineHeight: 1.2
+                }}
+              >
                 {formatCurrency(totalAvecFraisSFA)}
               </Typography>
             </Box>

@@ -14,6 +14,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Collapse,
+  TextField,
 } from '@mui/material';
 import { SimulationScenario } from '../types/simulation';
 import { useState } from 'react';
@@ -37,19 +39,21 @@ interface TableauComparatifProps {
 
 export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax, profilSelectionne, tauxRendement }: TableauComparatifProps) {
   const theme = useTheme();
-  const [nombreChangements, setNombreChangements] = useState<number>(1);
+  const [nombreChangements, setNombreChangements] = useState<number>(0);
   const [showChangements, setShowChangements] = useState<boolean>(false);
 
   const droitsEntreeTexteGauche = "Droits d'entrée 3% (moy. du marché)";
   const droitsEntreeTexteDroite = "Droits d'entrée avec SFA";
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-CH', {
+  const formatCurrency = (value: number, forcePositive: boolean = false) => {
+    const formattedValue = new Intl.NumberFormat('fr-CH', {
       style: 'currency',
       currency: 'CHF',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
+    
+    return forcePositive ? `+${formattedValue}` : formattedValue;
   };
 
   const formatPercentage = (value: number) => {
@@ -81,18 +85,20 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     if (!scenarioCash || !scenarioSelectionne) return null;
 
     const interetsCumules = scenarioSelectionne.resultat.interetsCumules;
-    const fraisEntreeBase = capitalInitial * tauxRendement.FRAIS_ENTREE_MARCHE; // Utiliser le taux configuré
-    const fraisEntreeMarche = fraisEntreeBase * (nombreChangements + 1);
-    const fraisEntreeSFA = capitalInitial * tauxRendement.FRAIS_ENTREE_SFA; // Utiliser le taux configuré
+    const fraisEntreeMarche = capitalInitial * tauxRendement.FRAIS_ENTREE_MARCHE;
+    const fraisEntreeSFA = capitalInitial * tauxRendement.FRAIS_ENTREE_SFA;
+    const fraisChangementFondation = nombreChangements * (capitalInitial * 0.03);
+    const fraisChangementFondationSFA = 0;
 
-    const estimationNetteMarche = capitalInitial + interetsCumules - fraisEntreeMarche;
-    const estimationNetteSFA = capitalInitial + interetsCumules - fraisEntreeSFA;
+    const estimationNetteMarche = capitalInitial + interetsCumules - fraisEntreeMarche - fraisChangementFondation;
+    const estimationNetteSFA = capitalInitial + interetsCumules - fraisEntreeSFA - fraisChangementFondationSFA;
 
     return {
       interetsCumules,
-      fraisEntreeBase,
       fraisEntreeMarche,
       fraisEntreeSFA,
+      fraisChangementFondation,
+      fraisChangementFondationSFA,
       estimationNetteMarche,
       estimationNetteSFA
     };
@@ -116,6 +122,12 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
         return '#e91e63'; // Rose
       default:
         return theme.palette.primary.main;
+    }
+  };
+
+  const handleChangeNombreChangements = (value: number) => {
+    if (value >= 0 && value <= 10) {
+      setNombreChangements(value);
     }
   };
 
@@ -207,15 +219,15 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
 
       {differences && (
         <>
-          <Grid container spacing={8} sx={{ mb: 12 }}>
+          <Grid container spacing={4} sx={{ mt: 4, mb: 12 }}>
             <Grid item xs={12} md={6}>
               <Paper 
-                elevation={3} 
+                elevation={2} 
                 sx={{ 
-                  p: 5,
+                  p: 3,
                   borderRadius: 2,
                   height: '100%',
-                  background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
+                  background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
                 }}
               >
                 <Typography 
@@ -223,110 +235,8 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                   gutterBottom 
                   sx={{ 
                     color: theme.palette.primary.main,
-                    fontWeight: 'bold',
-                    mb: 4
-                  }}
-                >
-                  Analyse comparative
-                </Typography>
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Élément</TableCell>
-                        <TableCell align="right">Montant</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow hover>
-                        <TableCell>Intérêts cumulés</TableCell>
-                        <TableCell 
-                          align="right"
-                          sx={{ 
-                            fontWeight: 500
-                          }}
-                        >
-                          {formatCurrency(differences.interetsCumules)}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow 
-                        hover 
-                        onClick={() => setShowChangements(!showChangements)}
-                        sx={{ cursor: 'pointer' }}
-                      >
-                        <TableCell>{droitsEntreeTexteGauche}</TableCell>
-                        <TableCell 
-                          align="right"
-                          sx={{ 
-                            fontWeight: 500
-                          }}
-                        >
-                          {formatCurrency(differences.fraisEntreeBase)}
-                        </TableCell>
-                      </TableRow>
-                      {showChangements && (
-                        <TableRow hover>
-                          <TableCell>
-                            <FormControl fullWidth size="small">
-                              <InputLabel>Nombre de changements</InputLabel>
-                              <Select
-                                value={nombreChangements}
-                                label="Nombre de changements"
-                                onChange={(e) => setNombreChangements(Number(e.target.value))}
-                              >
-                                {[1, 2, 3, 4, 5].map((num) => (
-                                  <MenuItem key={num} value={num}>
-                                    {num} changement{num > 1 ? 's' : ''}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </TableCell>
-                          <TableCell align="right">
-                            <Typography variant="body2" color="text.secondary">
-                              + {formatCurrency(differences.fraisEntreeMarche - differences.fraisEntreeBase)}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                      <TableRow hover>
-                        <TableCell sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                          Estimation du capital final
-                        </TableCell>
-                        <TableCell 
-                          align="right"
-                          sx={{ 
-                            fontWeight: 'bold',
-                            color: theme.palette.success.main,
-                            fontSize: '1.2rem'
-                          }}
-                        >
-                          {formatCurrency(differences.estimationNetteMarche)}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Paper>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Paper 
-                elevation={3} 
-                sx={{ 
-                  p: 5,
-                  borderRadius: 2,
-                  height: '100%',
-                  background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
-                }}
-              >
-                <Typography 
-                  variant="h6" 
-                  gutterBottom 
-                  sx={{ 
-                    color: theme.palette.primary.main,
-                    fontWeight: 'bold',
-                    mb: 4
+                    fontWeight: 600,
+                    mb: 3
                   }}
                 >
                   Analyse comparative SFA
@@ -351,59 +261,220 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                           {formatCurrency(differences.interetsCumules)}
                         </TableCell>
                       </TableRow>
-                      <TableRow 
-                        hover 
-                        onClick={() => setShowChangements(!showChangements)}
-                        sx={{ cursor: 'pointer' }}
-                      >
-                        <TableCell>{droitsEntreeTexteDroite}</TableCell>
+                      <TableRow hover>
+                        <TableCell>
+                          <Box>
+                            <Box 
+                              onClick={() => setShowChangements(!showChangements)}
+                              sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  color: theme.palette.primary.main,
+                                }
+                              }}
+                            >
+                              {droitsEntreeTexteDroite}
+                            </Box>
+                            <Collapse in={showChangements}>
+                              <Box sx={{ mt: 2, mb: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Typography variant="body2" sx={{ minWidth: 'max-content' }}>
+                                    Changement de fondation
+                                  </Typography>
+                                  <FormControl size="small" fullWidth>
+                                    <TextField
+                                      type="number"
+                                      size="small"
+                                      placeholder="Nombre"
+                                      value={nombreChangements}
+                                      onChange={(e) => {
+                                        const value = parseInt(e.target.value);
+                                        if (value >= 0 && value <= 10) {
+                                          setNombreChangements(value);
+                                        }
+                                      }}
+                                      inputProps={{
+                                        min: 0,
+                                        max: 10
+                                      }}
+                                      sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                          backgroundColor: 'white'
+                                        }
+                                      }}
+                                    />
+                                  </FormControl>
+                                </Box>
+                              </Box>
+                            </Collapse>
+                          </Box>
+                        </TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            fontWeight: 500,
+                            verticalAlign: 'top',
+                            pt: 2
+                          }}
+                        >
+                          {formatCurrency(differences.fraisEntreeSFA)}
+                        </TableCell>
+                      </TableRow>
+                      {nombreChangements > 0 && (
+                        <TableRow hover>
+                          <TableCell sx={{ pl: 4 }}>Frais de changement ({nombreChangements} fois)</TableCell>
+                          <TableCell 
+                            align="right"
+                            sx={{ 
+                              fontWeight: 500
+                            }}
+                          >
+                            {formatCurrency(differences.fraisChangementFondationSFA, true)}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      <TableRow hover>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Estimation du capital final</TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            fontWeight: 'bold',
+                            color: theme.palette.success.main
+                          }}
+                        >
+                          {formatCurrency(differences.estimationNetteSFA)}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Paper 
+                elevation={2} 
+                sx={{ 
+                  p: 3,
+                  borderRadius: 2,
+                  height: '100%',
+                  background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
+                }}
+              >
+                <Typography 
+                  variant="h6" 
+                  gutterBottom 
+                  sx={{ 
+                    color: theme.palette.primary.main,
+                    fontWeight: 600,
+                    mb: 3
+                  }}
+                >
+                  Analyse comparative
+                </Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Élément</TableCell>
+                        <TableCell align="right">Montant</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      <TableRow hover>
+                        <TableCell>Intérêts cumulés</TableCell>
                         <TableCell 
                           align="right"
                           sx={{ 
                             fontWeight: 500
                           }}
                         >
-                          {formatCurrency(differences.fraisEntreeSFA)}
+                          {formatCurrency(differences.interetsCumules)}
                         </TableCell>
                       </TableRow>
-                      {showChangements && (
-                        <TableRow hover>
-                          <TableCell>
-                            <FormControl fullWidth size="small">
-                              <InputLabel>Nombre de changements</InputLabel>
-                              <Select
-                                value={nombreChangements}
-                                label="Nombre de changements"
-                                onChange={(e) => setNombreChangements(Number(e.target.value))}
-                              >
-                                {[1, 2, 3, 4, 5].map((num) => (
-                                  <MenuItem key={num} value={num}>
-                                    {num} changement{num > 1 ? 's' : ''}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </TableCell>
-                          <TableCell align="right">
-                            <Typography variant="body2" color="text.secondary">
-                              + {formatCurrency(0)}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
                       <TableRow hover>
-                        <TableCell sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                          Estimation du capital final
+                        <TableCell>
+                          <Box>
+                            <Box 
+                              onClick={() => setShowChangements(!showChangements)}
+                              sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  color: theme.palette.primary.main,
+                                }
+                              }}
+                            >
+                              {droitsEntreeTexteGauche}
+                            </Box>
+                            <Collapse in={showChangements}>
+                              <Box sx={{ mt: 2, mb: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Typography variant="body2" sx={{ minWidth: 'max-content' }}>
+                                    Changement de fondation
+                                  </Typography>
+                                  <FormControl size="small" fullWidth>
+                                    <TextField
+                                      type="number"
+                                      size="small"
+                                      placeholder="Nombre"
+                                      value={nombreChangements}
+                                      onChange={(e) => {
+                                        const value = parseInt(e.target.value);
+                                        if (value >= 0 && value <= 10) {
+                                          setNombreChangements(value);
+                                        }
+                                      }}
+                                      inputProps={{
+                                        min: 0,
+                                        max: 10
+                                      }}
+                                      sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                          backgroundColor: 'white'
+                                        }
+                                      }}
+                                    />
+                                  </FormControl>
+                                </Box>
+                              </Box>
+                            </Collapse>
+                          </Box>
                         </TableCell>
                         <TableCell 
                           align="right"
                           sx={{ 
-                            fontWeight: 'bold',
-                            color: theme.palette.success.main,
-                            fontSize: '1.2rem'
+                            fontWeight: 500,
+                            verticalAlign: 'top',
+                            pt: 2
                           }}
                         >
-                          {formatCurrency(differences.estimationNetteSFA)}
+                          {formatCurrency(differences.fraisEntreeMarche)}
+                        </TableCell>
+                      </TableRow>
+                      {nombreChangements > 0 && (
+                        <TableRow hover>
+                          <TableCell sx={{ pl: 4 }}>Frais de changement ({nombreChangements} fois)</TableCell>
+                          <TableCell 
+                            align="right"
+                            sx={{ 
+                              fontWeight: 500,
+                              color: theme.palette.error.main
+                            }}
+                          >
+                            {formatCurrency(differences.fraisChangementFondation, true)}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      <TableRow hover>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Estimation du capital final</TableCell>
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            fontWeight: 'bold',
+                            color: theme.palette.success.main
+                          }}
+                        >
+                          {formatCurrency(differences.estimationNetteMarche)}
                         </TableCell>
                       </TableRow>
                     </TableBody>

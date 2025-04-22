@@ -18,6 +18,7 @@ import {
   Security
 } from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -183,7 +184,7 @@ function App() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ my: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
           <Box 
@@ -517,6 +518,63 @@ function App() {
                 scenarios={scenarios} 
                 profilSelectionne={profilSelectionne}
               />
+
+              {/* CTA Section */}
+              <Box 
+                sx={{ 
+                  mt: 8,
+                  mb: 4,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  gap: 3
+                }}
+              >
+                <Typography 
+                  variant="h5" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    maxWidth: '800px',
+                    mb: 1
+                  }}
+                >
+                  Prêt à optimiser votre libre passage ?
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  color="text.secondary" 
+                  sx={{ 
+                    maxWidth: '600px',
+                    mb: 3
+                  }}
+                >
+                  Ouvrez un compte de libre passage avec Swiss Financial Advice et bénéficiez d'un accompagnement personnalisé pour maximiser votre capital.
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<AccountBalanceIcon />}
+                  sx={{
+                    py: 2,
+                    px: 6,
+                    borderRadius: 2,
+                    fontSize: '1.1rem',
+                    textTransform: 'none',
+                    background: theme => `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
+                    }
+                  }}
+                  onClick={() => window.open('https://business.zugerberg-finanz.ch/auth', '_blank')}
+                >
+                  Ouvrir mon compte de libre passage
+                </Button>
+              </Box>
             </>
           )}
         </TabPanel>

@@ -79,6 +79,19 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     return theme.palette.text.primary;
   };
 
+  const getProfilColor = () => {
+    switch(profilSelectionne) {
+      case 'EQUILIBRE':
+        return '#43a047'; // Vert
+      case 'CROISSANCE':
+        return '#ff9800'; // Orange
+      case 'DYNAMIQUE':
+        return '#e91e63'; // Rose
+      default:
+        return theme.palette.primary.main;
+    }
+  };
+
   return (
     <>
       <Paper 
@@ -200,7 +213,6 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                   <TableCell 
                     align="right"
                     sx={{ 
-                      color: getValueColor(differences.interetsCumules),
                       fontWeight: 500
                     }}
                   >
@@ -224,18 +236,34 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                     backgroundColor: theme.palette.grey[50],
                   }}
                 >
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                    Capital estimé à terme
+                  <TableCell sx={{ fontSize: '1.1rem' }}>
+                    Intérêts estimés à terme
                   </TableCell>
                   <TableCell 
                     align="right"
                     sx={{ 
-                      fontWeight: 'bold',
-                      fontSize: '1rem',
-                      color: getValueColor(differences.estimationNette)
+                      fontWeight: 500,
+                      fontSize: '1.1rem',
+                      transition: 'color 0.3s ease',
+                      '&:hover': {
+                        color: getProfilColor(),
+                      }
                     }}
                   >
                     {formatCurrency(differences.estimationNette)}
+                  </TableCell>
+                </TableRow>
+                <TableRow hover>
+                  <TableCell sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Estimation nette du capital final</TableCell>
+                  <TableCell 
+                    align="right"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      color: theme.palette.success.main,
+                      fontSize: '1.2rem'
+                    }}
+                  >
+                    {formatCurrency(scenarioSelectionne?.resultat.capitalFinal || 0)}
                   </TableCell>
                 </TableRow>
               </TableBody>

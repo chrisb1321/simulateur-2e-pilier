@@ -119,7 +119,7 @@ function App() {
 
       setScenarios([scenarioCash, scenarioEquilibre, scenarioCroissance, scenarioDynamique]);
       setIsLoading(false);
-    }, 5000); // Délai de 5 secondes
+    }, 7000); // Délai de 7 secondes
   };
 
   const calculerScenario = (

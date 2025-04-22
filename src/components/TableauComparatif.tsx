@@ -25,9 +25,17 @@ interface TableauComparatifProps {
   age: number;
   ageMax: number;
   profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
+  tauxRendement: {
+    CASH: number;
+    FAIBLE: number;
+    MOYEN: number;
+    ELEVE: number;
+    FRAIS_ENTREE_MARCHE: number;
+    FRAIS_ENTREE_SFA: number;
+  };
 }
 
-export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax, profilSelectionne }: TableauComparatifProps) {
+export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax, profilSelectionne, tauxRendement }: TableauComparatifProps) {
   const theme = useTheme();
   const [nombreChangements, setNombreChangements] = useState<number>(1);
   const [showChangements, setShowChangements] = useState<boolean>(false);
@@ -73,9 +81,9 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     if (!scenarioCash || !scenarioSelectionne) return null;
 
     const interetsCumules = scenarioSelectionne.resultat.interetsCumules;
-    const fraisEntreeBase = capitalInitial * 0.03; // 3% du capital initial
-    const fraisEntreeMarche = fraisEntreeBase * (nombreChangements + 1); // Montant total avec les changements
-    const fraisEntreeSFA = capitalInitial * 0.015; // 1.5% du capital initial
+    const fraisEntreeBase = capitalInitial * tauxRendement.FRAIS_ENTREE_MARCHE; // Utiliser le taux configuré
+    const fraisEntreeMarche = fraisEntreeBase * (nombreChangements + 1);
+    const fraisEntreeSFA = capitalInitial * tauxRendement.FRAIS_ENTREE_SFA; // Utiliser le taux configuré
 
     const estimationNetteMarche = capitalInitial + interetsCumules - fraisEntreeMarche;
     const estimationNetteSFA = capitalInitial + interetsCumules - fraisEntreeSFA;
@@ -405,11 +413,16 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
             </Grid>
           </Grid>
           
-          <DiagrammeComparatif
+          <DiagrammeComparatif 
             capitalInitial={capitalInitial}
             interetsCumules={differences.interetsCumules}
             fraisEntreeMarche={differences.fraisEntreeMarche}
             fraisEntreeSFA={differences.fraisEntreeSFA}
+            profilInvestissement={
+              profilSelectionne === 'EQUILIBRE' ? 'Allier sécurité et rendement' :
+              profilSelectionne === 'CROISSANCE' ? 'Faire croître mon capital' :
+              profilSelectionne === 'DYNAMIQUE' ? 'Placement dynamique' : ''
+            }
           />
         </>
       )}

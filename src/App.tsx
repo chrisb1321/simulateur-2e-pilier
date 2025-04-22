@@ -7,6 +7,17 @@ import ConfigurationTaux from './components/ConfigurationTaux'
 import { SimulationInput, SimulationScenario } from './types/simulation'
 import logo from './assets/images/logo.png'
 import LoadingSimulation from './components/LoadingSimulation'
+import { 
+  Person,
+  Assessment,
+  Timeline,
+  Compare,
+  SwapHoriz,
+  AccountBalance,
+  Business,
+  Security
+} from '@mui/icons-material'
+import { useTheme } from '@mui/material/styles'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -68,6 +79,7 @@ function App() {
     FRAIS_ENTREE_MARCHE: CONSTANTS.FRAIS_ENTREE,
     FRAIS_ENTREE_SFA: CONSTANTS.FRAIS_ENTREE * 0.5, // 50% des frais du marché par défaut
   });
+  const theme = useTheme();
 
   const handleTauxChange = (nouveauxTaux: typeof tauxRendement) => {
     setTauxRendement(nouveauxTaux);
@@ -118,7 +130,15 @@ function App() {
         tauxRendement.FRAIS_ENTREE_SFA
       );
 
-      setScenarios([scenarioCash, scenarioEquilibre, scenarioCroissance, scenarioDynamique]);
+      // Ajouter tous les scénarios
+      const nouveauxScenarios = [
+        scenarioCash,
+        scenarioEquilibre,
+        scenarioCroissance,
+        scenarioDynamique
+      ];
+
+      setScenarios(nouveauxScenarios);
       setIsLoading(false);
     }, 7000); // Délai de 7 secondes
   };
@@ -188,33 +208,244 @@ function App() {
           </Typography>
         </Box>
         
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={activeTab} onChange={handleTabChange}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange}
+            sx={{
+              '& .MuiTab-root': {
+                fontSize: '1rem',
+                textTransform: 'none',
+              }
+            }}
+          >
+            <Tab label="Présentation" />
             <Tab label="Simulation" />
-            <Tab label="Configuration des taux" />
+            <Tab label="Configuration" />
+            <Tab label="Recherche des avoirs LPP" />
           </Tabs>
         </Box>
 
         <TabPanel value={activeTab} index={0}>
-          <Box sx={{ mb: 5 }}>
-            <Button
-              variant="outlined"
-              size="large"
-              href="https://forms.zohopublic.eu/swissfinancial1/form/Mandatderecherche/formperma/3jgRf4_IBYaeKKVqF55iy2gBp8Gwz4S2P8PGgxMmi1c?zf_pf_id=956584"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                fontSize: '1rem',
-                fontWeight: 500,
-                px: 4
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 4,
+              mb: 4,
+              borderRadius: 2,
+              background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
+            }}
+          >
+            <Typography 
+              variant="h5" 
+              gutterBottom 
+              sx={{ 
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+                mb: 4,
+                textAlign: 'center'
               }}
             >
-              Recherche des avoirs LPP
-            </Button>
-          </Box>
+              Swiss Financial Advice c'est :
+            </Typography>
 
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Person color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Conseiller dédié et expérimenté
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Un interlocuteur unique vous accompagne à chaque étape, avec une expertise spécialisée dans les comptes de libre passage.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Assessment color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Suivi personnalisé de votre compte
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Accédez aux performances de votre placement via un reporting régulier et clair.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Timeline color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Accompagnement jusqu'à la retraite
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Nous restons à vos côtés pour ajuster votre stratégie selon l'évolution de votre situation et des opportunités du marché.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Compare color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Comparaison régulière avec le marché
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Votre solution est réévaluée périodiquement pour s'assurer qu'elle reste compétitive et alignée avec vos objectifs.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <SwapHoriz color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Changement de fondation sans frais
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Grâce à nos partenaires, vous pouvez modifier votre fondation à tout moment, sans frais de transfert.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <AccountBalance color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Optimisation fiscale au moment du retrait
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Nous vous accompagnons pour choisir l'option de retrait la plus avantageuse (capital, rente ou combinaison), en tenant compte de votre fiscalité.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Business color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Accès à des Banques privées en gestion de fortune
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Profitez de placements sélectionnés en fonction de votre profil, via notre réseau partenaire.
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      transform: 'translateY(-2px)'
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Security color="primary" sx={{ fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      Indépendance et transparence
+                    </Typography>
+                  </Box>
+                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
+                    Nos conseils sont orientés vers la valorisation durable de votre capital.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={1}>
           <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
             <Typography variant="h5" gutterBottom>
               Paramètres de simulation
@@ -280,6 +511,7 @@ function App() {
                 ageMax={CONSTANTS.AGE_MAX}
                 capitalInitial={parseFloat(capital.replace(/[^0-9.-]+/g, ''))}
                 profilSelectionne={profilSelectionne}
+                tauxRendement={tauxRendement}
               />
               <GraphiqueEvolution 
                 scenarios={scenarios} 
@@ -289,11 +521,72 @@ function App() {
           )}
         </TabPanel>
 
-        <TabPanel value={activeTab} index={1}>
+        <TabPanel value={activeTab} index={2}>
           <ConfigurationTaux
             tauxActuels={tauxRendement}
             onTauxChange={handleTauxChange}
           />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={3}>
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 4,
+              mb: 4,
+              borderRadius: 2,
+              background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
+            }}
+          >
+            <Typography 
+              variant="h5" 
+              gutterBottom 
+              sx={{ 
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+                mb: 4,
+                textAlign: 'center'
+              }}
+            >
+              Recherche de vos avoirs de libre passage
+            </Typography>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Button
+                variant="contained"
+                size="large"
+                href="https://forms.zohopublic.eu/swissfinancial1/form/Mandatderecherche/formperma/3jgRf4_IBYaeKKVqF55iy2gBp8Gwz4S2P8PGgxMmi1c?zf_pf_id=956584"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontSize: '1.1rem',
+                  fontWeight: 500,
+                  px: 6,
+                  py: 2,
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                    boxShadow: theme.shadows[8],
+                  }
+                }}
+              >
+                Lancer la recherche
+              </Button>
+            </Box>
+            
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mt: 4, 
+                textAlign: 'center',
+                color: theme.palette.text.secondary
+              }}
+            >
+              Nous vous aidons à localiser vos comptes de libre passage oubliés ou perdus.
+            </Typography>
+          </Paper>
         </TabPanel>
       </Box>
     </Container>

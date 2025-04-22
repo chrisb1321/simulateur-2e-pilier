@@ -65,12 +65,35 @@ export default function DiagrammeComparatif({
   };
 
   const total = capitalInitial + interetsCumules;
+  const totalAvecFraisMarche = total - fraisEntreeMarche;
   const totalAvecFraisSFA = total - fraisEntreeSFA;
+  const difference = totalAvecFraisSFA - totalAvecFraisMarche;
 
   const data = [
-    { name: 'Capital initial', value: capitalInitial, color: theme.palette.primary.main },
-    { name: 'Intérêts cumulés', value: interetsCumules, color: theme.palette.success.main },
-    { name: 'Droits d\'entrée (SFA)', value: fraisEntreeSFA, color: theme.palette.text.secondary }
+    { 
+      name: 'Capital initial', 
+      value: capitalInitial, 
+      color: theme.palette.primary.main,
+      percentage: formatPercentage(capitalInitial, total)
+    },
+    { 
+      name: 'Intérêts cumulés', 
+      value: interetsCumules, 
+      color: theme.palette.success.main,
+      percentage: formatPercentage(interetsCumules, total)
+    },
+    { 
+      name: 'Droits d\'entrée (marché)', 
+      value: fraisEntreeMarche, 
+      color: theme.palette.error.main,
+      percentage: formatPercentage(fraisEntreeMarche, total)
+    },
+    { 
+      name: 'Droits d\'entrée (SFA)', 
+      value: fraisEntreeSFA, 
+      color: theme.palette.warning.main,
+      percentage: formatPercentage(fraisEntreeSFA, total)
+    },
   ];
 
   const RADIAN = Math.PI / 180;
@@ -184,49 +207,23 @@ export default function DiagrammeComparatif({
   };
 
   const getDocumentPath = () => {
-    console.log('Profil actuel:', profilInvestissement);
-    let path = '';
-    
+    const basePath = '/documents';
     switch(profilInvestissement) {
-      case 'Allier sécurité et rendement':
-        path = '/Allier sécurité et rendement - Présentation.pdf';
-        break;
-      case 'Faire croître mon capital':
-        path = '/Faire croître mon capital - Présentation.pdf';
-        break;
       case 'Placement dynamique':
-        path = '/Placement dynamique - Présentation.pdf';
-        break;
+        return `${basePath}/Placement dynamique - Présentation.pdf`;
+      case 'Faire croître mon capital':
+        return `${basePath}/Faire croître mon capital - Présentation.pdf`;
+      case 'Allier sécurité et rendement':
+        return `${basePath}/Allier sécurité et rendement - Présentation.pdf`;
       default:
-        console.log('Profil non reconnu');
         return '';
     }
-    
-    console.log('Chemin du document:', path);
-    return path;
   };
 
   const handleDownload = () => {
     const path = getDocumentPath();
     if (path) {
-      try {
-        // Créer un lien temporaire
-        const link = document.createElement('a');
-        link.href = path;
-        link.setAttribute('download', path.split('/').pop() || '');
-        document.body.appendChild(link);
-        console.log('Tentative de téléchargement avec le chemin:', path);
-        
-        // Simuler un clic
-        link.click();
-        
-        // Nettoyer
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error('Erreur lors du téléchargement:', error);
-      }
-    } else {
-      console.error('Aucun document trouvé pour le profil:', profilInvestissement);
+      window.open(path, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -235,7 +232,6 @@ export default function DiagrammeComparatif({
       elevation={3} 
       sx={{ 
         p: 5,
-        mt: 15,
         borderRadius: 2,
         height: 'auto',
         background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.grey[50]} 100%)`,
@@ -268,7 +264,7 @@ export default function DiagrammeComparatif({
           }
         }}
       >
-        Analyse par répartition des montants
+        Répartition des montants
       </Typography>
 
       <Grid container spacing={3}>
@@ -390,37 +386,101 @@ export default function DiagrammeComparatif({
               Résumé
             </Typography>
 
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Capital initial
+            <Box>
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    color: theme.palette.primary.main,
+                  }
+                }}
+              >
+                Capital total (avec intérêts)
               </Typography>
-              <Typography variant="h6" color="primary.main" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(capitalInitial)}
+              <Typography 
+                variant="h6"
+                sx={{
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    filter: 'brightness(1.1)',
+                  }
+                }}
+              >
+                {formatCurrency(total)}
               </Typography>
             </Box>
 
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Droits d'entrée
+            <Divider sx={{ borderColor: 'rgba(0,0,0,0.1)' }} />
+
+            <Box>
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    color: theme.palette.error.main,
+                  }
+                }}
+              >
+                Après frais du marché
               </Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(fraisEntreeSFA)}
+              <Typography 
+                variant="h6" 
+                sx={{
+                  color: theme.palette.error.main,
+                  textShadow: '0 0 1px rgba(244,67,54,0.1)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    textShadow: '0 0 8px rgba(244,67,54,0.3)',
+                  }
+                }}
+              >
+                {formatCurrency(totalAvecFraisMarche)}
               </Typography>
             </Box>
 
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Intérêts cumulés
+            <Box>
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    color: theme.palette.success.main,
+                  }
+                }}
+              >
+                Après frais SFA
               </Typography>
-              <Typography variant="h6" color="success.main" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(interetsCumules)}
+              <Typography 
+                variant="h6" 
+                sx={{
+                  color: theme.palette.success.main,
+                  textShadow: '0 0 1px rgba(76,175,80,0.1)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    textShadow: '0 0 8px rgba(76,175,80,0.3)',
+                  }
+                }}
+              >
+                {formatCurrency(totalAvecFraisSFA)}
               </Typography>
             </Box>
+
+            <Divider sx={{ borderColor: 'rgba(0,0,0,0.1)' }} />
 
             <Box 
               sx={{ 
                 p: 2, 
-                mt: 3,
                 borderRadius: 2,
                 background: `linear-gradient(135deg, ${theme.palette.success.light} 0%, ${theme.palette.success.main} 100%)`,
                 color: 'white',
@@ -435,17 +495,20 @@ export default function DiagrammeComparatif({
               }}
             >
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                Estimation du capital final
+                Différence en votre faveur
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                {formatCurrency(totalAvecFraisSFA)}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                {formatCurrency(difference)}
+              </Typography>
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                soit {formatPercentage(difference, total)} du capital total
               </Typography>
             </Box>
           </Paper>
         </Grid>
 
         <Grid item xs={12}>
-          <Divider sx={{ my: 12, borderColor: 'rgba(0,0,0,0.1)' }} />
+          <Divider sx={{ my: 4, borderColor: 'rgba(0,0,0,0.1)' }} />
           
           <Box 
             sx={{ 
@@ -472,7 +535,6 @@ export default function DiagrammeComparatif({
               startIcon={<ArticleIcon />}
               endIcon={<DownloadIcon />}
               onClick={handleDownload}
-              disabled={!getDocumentPath()}
               sx={{
                 px: 4,
                 py: 1.5,
@@ -487,7 +549,7 @@ export default function DiagrammeComparatif({
                 }
               }}
             >
-              Télécharger la présentation
+              Télécharger la présentation {profilInvestissement}
             </Button>
             
             <Typography 
@@ -499,7 +561,7 @@ export default function DiagrammeComparatif({
                 fontStyle: 'italic'
               }}
             >
-              Document associé : {profilInvestissement || 'Aucun profil sélectionné'}
+              Les documents sont stockés dans le dossier /public/documents/
             </Typography>
           </Box>
         </Grid>

@@ -19,6 +19,14 @@ import {
 } from '@mui/icons-material'
 import { useTheme } from '@mui/material/styles'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import { Card, CardContent, alpha } from '@mui/material'
+import PersonIcon from '@mui/icons-material/Person'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import AssessmentIcon from '@mui/icons-material/Assessment'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
+import SavingsIcon from '@mui/icons-material/Savings'
+import SecurityIcon from '@mui/icons-material/Security'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -64,6 +72,207 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
+const ServicesSection = () => {
+  const theme = useTheme();
+
+  const services = [
+    {
+      icon: <PersonIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Conseiller dédié et expérimenté",
+      description: "Un interlocuteur unique vous accompagne à chaque étape, avec une expertise spécialisée dans les comptes de libre passage."
+    },
+    {
+      icon: <AssessmentIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Suivi personnalisé de votre compte",
+      description: "Accédez aux performances de votre placement via un reporting régulier et clair."
+    },
+    {
+      icon: <TimelineIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Accompagnement jusqu'à la retraite",
+      description: "Nous restons à vos côtés pour ajuster votre stratégie selon l'évolution de votre situation et des opportunités du marché."
+    },
+    {
+      icon: <CompareArrowsIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Comparaison régulière avec le marché",
+      description: "Votre solution est réévaluée périodiquement pour s'assurer qu'elle reste compétitive et alignée avec vos objectifs."
+    },
+    {
+      icon: <SwapHorizIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Changement de fondation sans frais",
+      description: "Grâce à nos partenaires, vous pouvez modifier votre fondation à tout moment, sans frais de transfert."
+    },
+    {
+      icon: <SavingsIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Optimisation fiscale au moment du retrait",
+      description: "Nous vous accompagnons pour choisir l'option de retrait la plus avantageuse (capital, rente ou combinaison), en tenant compte de votre fiscalité."
+    },
+    {
+      icon: <AccountBalanceIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Accès à des Banques privées en gestion de fortune",
+      description: "Profitez de placements sélectionnés en fonction de votre profil, via notre réseau partenaire."
+    },
+    {
+      icon: <SecurityIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
+      title: "Indépendance et transparence",
+      description: "Nos conseils sont orientés vers la valorisation durable de votre capital."
+    }
+  ];
+
+  return (
+    <Box sx={{ 
+      py: 12, 
+      px: 4, 
+      borderRadius: 4,
+      position: 'relative',
+      overflow: 'hidden',
+      background: theme => `linear-gradient(to bottom right, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.paper, 0.95)})`,
+      boxShadow: '0 0 40px rgba(0,0,0,0.03)'
+    }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100%',
+          background: `radial-gradient(circle at 0% 0%, ${alpha(theme.palette.grey[200], 0.4)} 0%, transparent 50%),
+                      radial-gradient(circle at 100% 100%, ${alpha(theme.palette.grey[200], 0.4)} 0%, transparent 50%)`,
+          zIndex: 0
+        }}
+      />
+      <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography 
+          variant="h3" 
+          component="h2" 
+          align="center" 
+          gutterBottom
+          sx={{ 
+            mb: 10, 
+            color: theme.palette.text.primary,
+            fontWeight: 700,
+            fontSize: '2.5rem',
+            letterSpacing: '-0.5px',
+            position: 'relative',
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              bottom: -20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 100,
+              height: 3,
+              borderRadius: 2,
+              background: theme => `linear-gradient(90deg, ${alpha(theme.palette.text.primary, 0)}, ${alpha(theme.palette.text.primary, 0.3)} 50%, ${alpha(theme.palette.text.primary, 0)})`,
+            }
+          }}
+        >
+          Swiss Financial Advice c'est :
+        </Typography>
+        <Grid container spacing={4} justifyContent="center">
+          {services.map((service, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card 
+                sx={{ 
+                  height: '100%',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: theme => `linear-gradient(to bottom right, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.paper, 0.95)})`,
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  '&:hover': {
+                    transform: 'translateY(-12px)',
+                    boxShadow: theme => `0 16px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
+                    borderColor: 'transparent',
+                    '& .icon-container': {
+                      transform: 'scale(1.15)',
+                      backgroundColor: theme => alpha(theme.palette.primary.main, 0.15),
+                    },
+                    '& .card-content': {
+                      backgroundColor: 'transparent'
+                    }
+                  },
+                  '&:before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 3,
+                    background: theme => `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                    opacity: 0.7
+                  }
+                }}
+              >
+                <CardContent 
+                  className="card-content"
+                  sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    p: 4,
+                    transition: 'all 0.4s ease'
+                  }}
+                >
+                  <Box 
+                    className="icon-container"
+                    sx={{ 
+                      mb: 3.5,
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 85,
+                      height: 85,
+                      borderRadius: '50%',
+                      backgroundColor: theme => alpha(theme.palette.primary.main, 0.08),
+                      boxShadow: theme => `0 8px 24px ${alpha(theme.palette.primary.main, 0.12)}`
+                    }}
+                  >
+                    {service.icon}
+                  </Box>
+                  <Typography 
+                    variant="h6" 
+                    component="h3" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: '1.25rem',
+                      mb: 2.5,
+                      minHeight: '2.8em',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: theme.palette.text.primary,
+                      lineHeight: 1.3,
+                      letterSpacing: '-0.3px'
+                    }}
+                  >
+                    {service.title}
+                  </Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      flex: 1,
+                      lineHeight: 1.8,
+                      color: alpha(theme.palette.text.secondary, 0.95),
+                      fontSize: '0.95rem'
+                    }}
+                  >
+                    {service.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Box>
+  );
+};
 
 function App() {
   const [activeTab, setActiveTab] = useState(0);
@@ -228,222 +437,7 @@ function App() {
         </Box>
 
         <TabPanel value={activeTab} index={0}>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 4,
-              mb: 4,
-              borderRadius: 2,
-              background: `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
-            }}
-          >
-            <Typography 
-              variant="h5" 
-              gutterBottom 
-              sx={{ 
-                color: theme.palette.primary.main,
-                fontWeight: 'bold',
-                mb: 4,
-                textAlign: 'center'
-              }}
-            >
-              Swiss Financial Advice c'est :
-            </Typography>
-
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Person color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Conseiller dédié et expérimenté
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Un interlocuteur unique vous accompagne à chaque étape, avec une expertise spécialisée dans les comptes de libre passage.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Assessment color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Suivi personnalisé de votre compte
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Accédez aux performances de votre placement via un reporting régulier et clair.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Timeline color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Accompagnement jusqu'à la retraite
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Nous restons à vos côtés pour ajuster votre stratégie selon l'évolution de votre situation et des opportunités du marché.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Compare color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Comparaison régulière avec le marché
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Votre solution est réévaluée périodiquement pour s'assurer qu'elle reste compétitive et alignée avec vos objectifs.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <SwapHoriz color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Changement de fondation sans frais
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Grâce à nos partenaires, vous pouvez modifier votre fondation à tout moment, sans frais de transfert.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <AccountBalance color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Optimisation fiscale au moment du retrait
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Nous vous accompagnons pour choisir l'option de retrait la plus avantageuse (capital, rente ou combinaison), en tenant compte de votre fiscalité.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Business color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Accès à des Banques privées en gestion de fortune
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Profitez de placements sélectionnés en fonction de votre profil, via notre réseau partenaire.
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      transform: 'translateY(-2px)'
-                    },
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                    <Security color="primary" sx={{ fontSize: 28 }} />
-                    <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                      Indépendance et transparence
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ color: theme.palette.text.secondary, ml: 5 }}>
-                    Nos conseils sont orientés vers la valorisation durable de votre capital.
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
+          <ServicesSection />
         </TabPanel>
 
         <TabPanel value={activeTab} index={1}>

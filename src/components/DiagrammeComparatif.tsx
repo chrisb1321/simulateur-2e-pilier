@@ -238,10 +238,12 @@ export default function DiagrammeComparatif({
                   animationBegin={0}
                   animationDuration={2000}
                   animationEasing="ease-out"
+                  key={`${capitalInitial}-${interetsCumules}-${fraisEntreeSFA}-${Date.now()}`}
+                  isAnimationActive={true}
                 >
                   {data.map((entry, index) => (
                     <Cell 
-                      key={`cell-${index}`}
+                      key={`cell-${index}-${entry.value}`}
                       id={`pie-sector-${index}`}
                       fill={entry.color}
                       strokeWidth={2}

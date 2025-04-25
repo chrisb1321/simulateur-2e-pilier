@@ -27,6 +27,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import SavingsIcon from '@mui/icons-material/Savings'
 import SecurityIcon from '@mui/icons-material/Security'
+import PortefeuillesPartenaires from './components/PortefeuillesPartenaires'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -433,6 +434,7 @@ function App() {
             <Tab label="Simulation" />
             <Tab label="Configuration" />
             <Tab label="Recherche des avoirs LPP" />
+            <Tab label="Portefeuilles" />
           </Tabs>
         </Box>
 
@@ -639,6 +641,10 @@ function App() {
               Nous vous aidons à localiser vos comptes de libre passage oubliés ou perdus.
             </Typography>
           </Paper>
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={4}>
+          <PortefeuillesPartenaires />
         </TabPanel>
       </Box>
     </Container>

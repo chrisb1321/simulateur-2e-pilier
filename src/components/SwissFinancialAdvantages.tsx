@@ -31,6 +31,52 @@ const zoomIn = keyframes`
   }
 `;
 
+const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const pulse = keyframes`
+  0% {
+    transform: scaleX(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scaleX(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.7;
+  }
+`;
+
+const rippleEffect = keyframes`
+  0% {
+    transform: scaleX(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scaleX(2.8);
+    opacity: 0;
+  }
+`;
+
+// Palette Portefeuilles (bleu vif, bleu clair, gris clair)
+const COLOR_PRIMARY = '#1da1f2'; // Bleu vif Portefeuilles
+const COLOR_GRADIENT = 'linear-gradient(90deg, #1da1f2 60%, #6dd5fa 100%)';
+const COLOR_BG = '#fafdff'; // Fond très clair
+const COLOR_CARD_BG = '#fff';
+const COLOR_BORDER = '#e3f0fa';
+const COLOR_TEXT = '#222';
+const COLOR_TEXT_SECONDARY = '#6b7c93';
+
 const SwissFinancialAdvantages = () => {
   const services = [
     {
@@ -76,19 +122,20 @@ const SwissFinancialAdvantages = () => {
   ];
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', pb: 6, background: COLOR_BG }}>
+      {/* Encadré principal harmonisé avec couleurs Portefeuilles */}
       <Paper
-        elevation={6}
+        elevation={8}
         sx={{
-          mb: 6,
-          px: { xs: 2, sm: 6 },
-          py: { xs: 4, sm: 6 },
-          borderRadius: 5,
-          maxWidth: '1100px',
+          mb: 7,
+          px: { xs: 2, sm: 7 },
+          py: { xs: 4, sm: 7 },
+          borderRadius: 6,
+          maxWidth: '1200px',
           mx: 'auto',
           textAlign: 'center',
-          background: theme => `linear-gradient(to right bottom, ${theme.palette.background.paper}, ${theme.palette.grey[50]})`,
-          boxShadow: '0 8px 32px 0 rgba(33,150,243,0.18), 0 2px 24px 0 rgba(33,150,243,0.10)',
+          background: COLOR_CARD_BG,
+          boxShadow: '0 12px 48px 0 rgba(29,161,242,0.13), 0 2px 32px 0 rgba(29,161,242,0.08)',
           position: 'relative',
           animation: `${zoomIn} 0.7s cubic-bezier(0.4,0,0.2,1)`,
           '&:after': {
@@ -98,8 +145,8 @@ const SwissFinancialAdvantages = () => {
             right: 0,
             bottom: 0,
             top: 0,
-            borderRadius: 5,
-            boxShadow: '0 0 32px 8px rgba(33,150,243,0.07)',
+            borderRadius: 6,
+            boxShadow: '0 0 48px 12px rgba(29,161,242,0.09)',
             pointerEvents: 'none',
             zIndex: 0,
           }
@@ -109,24 +156,42 @@ const SwissFinancialAdvantages = () => {
           variant="h2"
           component="h1"
           sx={{
-            color: theme => theme.palette.primary.main,
-            fontWeight: 700,
-            fontSize: { xs: '2rem', sm: '2.7rem' },
+            color: COLOR_PRIMARY,
+            fontWeight: 800,
+            fontSize: { xs: '2.2rem', sm: '2.9rem' },
             mb: 1.5,
             position: 'relative',
             display: 'inline-block',
+            letterSpacing: '-0.5px',
+            lineHeight: 1.1,
+            opacity: 0,
+            animation: `${fadeInDown} 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s forwards`,
             '&:after': {
               content: '""',
-              display: 'block',
-              width: '120px',
-              height: '7px',
-              borderRadius: '6px',
-              background: 'linear-gradient(90deg, #2196f3 60%, #6dd5fa 100%)',
               position: 'absolute',
+              bottom: '-12px',
               left: '50%',
               transform: 'translateX(-50%)',
-              bottom: '-14px',
-              opacity: 0.18
+              width: '90px',
+              height: '6px',
+              background: 'linear-gradient(90deg, #2196F3, #21CBF3)',
+              borderRadius: '3px',
+              animation: `${pulse} 2s infinite`,
+              zIndex: 1,
+            },
+            '&:before': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '90px',
+              height: '6px',
+              background: 'linear-gradient(90deg, #2196F3, #21CBF3)',
+              borderRadius: '3px',
+              opacity: 0.4,
+              zIndex: 0,
+              animation: `${rippleEffect} 2s infinite`,
             }
           }}
         >
@@ -135,46 +200,56 @@ const SwissFinancialAdvantages = () => {
         <Typography
           variant="subtitle1"
           sx={{
-            color: theme => theme.palette.text.secondary,
-            fontSize: { xs: '1.05rem', sm: '1.25rem' },
+            color: COLOR_TEXT_SECONDARY,
+            fontSize: { xs: '1.08rem', sm: '1.28rem' },
             mt: 4,
             mb: 1,
-            maxWidth: 700,
+            maxWidth: 720,
             mx: 'auto',
+            fontWeight: 400,
+            letterSpacing: '-0.1px',
+            opacity: 0,
+            animation: `${fadeInDown} 0.7s cubic-bezier(0.4,0,0.2,1) 0.35s forwards`,
           }}
         >
           Découvrez notre sélection de services adaptés à vos objectifs
         </Typography>
       </Paper>
 
-      <Grid container spacing={4}>
+      {/* Grille des cartes/services harmonisée avec couleurs Portefeuilles */}
+      <Grid container spacing={10} justifyContent="center">
         {services.map((service, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index} sx={{ mb: { xs: 5, md: 0 } }}>
             <Paper
-              elevation={2}
+              elevation={3}
               sx={{
                 height: '100%',
-                p: 3,
-                borderRadius: '16px',
-                backgroundColor: '#fff',
-                transition: 'all 0.3s ease-in-out',
+                p: 3.5,
+                pb: 1.5,
+                borderRadius: '22px',
+                backgroundColor: COLOR_CARD_BG,
+                transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
                 opacity: 0,
-                animation: `${fadeIn} 0.5s ease-out ${index * 0.1}s forwards`,
+                animation: `${fadeIn} 0.6s ease-out ${index * 0.12}s forwards`,
                 display: 'flex',
                 flexDirection: 'column',
+                alignItems: 'center',
                 position: 'relative',
                 overflow: 'hidden',
-                border: '1px solid',
-                borderColor: 'divider',
+                border: '1.5px solid',
+                borderColor: COLOR_BORDER,
+                boxShadow: '0 2px 16px 0 rgba(29,161,242,0.07)',
+                mb: { xs: 4, md: 0 },
                 '&:hover': {
-                  transform: 'translateY(-8px)',
-                  boxShadow: theme => `0 16px 40px ${theme.palette.primary.main}15`,
+                  transform: 'translateY(-10px) scale(1.025)',
+                  boxShadow: `0 16px 48px 0 ${COLOR_PRIMARY}22`,
                   borderColor: 'transparent',
                   '& .icon-box': {
-                    backgroundColor: theme => theme.palette.primary.main,
+                    backgroundColor: COLOR_PRIMARY,
+                    boxShadow: `0 4px 24px 0 ${COLOR_PRIMARY}22`,
                     '& svg': {
                       color: '#fff',
-                      transform: 'scale(1.1)'
+                      transform: 'scale(1.13)'
                     }
                   }
                 },
@@ -184,8 +259,8 @@ const SwissFinancialAdvantages = () => {
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: '3px',
-                  background: theme => `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                  height: '4px',
+                  background: COLOR_GRADIENT,
                   opacity: 0,
                   transition: 'opacity 0.3s ease-in-out'
                 },
@@ -197,19 +272,20 @@ const SwissFinancialAdvantages = () => {
               <Box
                 className="icon-box"
                 sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: '12px',
-                  backgroundColor: theme => `${theme.palette.primary.main}15`,
+                  width: 64,
+                  height: 64,
+                  borderRadius: '16px',
+                  backgroundColor: `${COLOR_PRIMARY}13`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  mb: 2,
-                  transition: 'all 0.3s ease-in-out',
+                  mb: 2.5,
+                  boxShadow: '0 2px 12px 0 rgba(29,161,242,0.08)',
+                  transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
                   '& svg': {
-                    fontSize: 28,
-                    color: theme => theme.palette.primary.main,
-                    transition: 'all 0.3s ease-in-out'
+                    fontSize: 30,
+                    color: COLOR_PRIMARY,
+                    transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)'
                   }
                 }}
               >
@@ -219,11 +295,13 @@ const SwissFinancialAdvantages = () => {
                 variant="h6"
                 component="h3"
                 sx={{
-                  fontWeight: 600,
-                  mb: 1.5,
-                  color: theme => theme.palette.text.primary,
-                  fontSize: '1.1rem',
-                  lineHeight: 1.4
+                  fontWeight: 700,
+                  mb: 1.2,
+                  color: COLOR_TEXT,
+                  fontSize: '1.13rem',
+                  lineHeight: 1.35,
+                  textAlign: 'center',
+                  letterSpacing: '-0.2px',
                 }}
               >
                 {service.title}
@@ -231,9 +309,11 @@ const SwissFinancialAdvantages = () => {
               <Typography
                 variant="body2"
                 sx={{
-                  color: theme => theme.palette.text.secondary,
+                  color: COLOR_TEXT_SECONDARY,
                   lineHeight: 1.6,
-                  fontSize: '0.9rem'
+                  fontSize: '0.97rem',
+                  textAlign: 'center',
+                  fontWeight: 400,
                 }}
               >
                 {service.description}

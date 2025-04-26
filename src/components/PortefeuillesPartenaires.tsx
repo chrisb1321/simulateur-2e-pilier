@@ -1,5 +1,5 @@
-import { Box, Card, Typography, Grid, Tooltip, IconButton, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { useState } from 'react';
+import { Box, Card, Typography, Grid, Tooltip, IconButton, Accordion, AccordionSummary, AccordionDetails, Paper } from '@mui/material';
+import { useState, useEffect } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Button } from '@mui/material';
@@ -96,7 +96,7 @@ const FONDS: FondInfo[] = [
     categorie: 'FAIBLE',
     risque: 'Faible',
     rendementCible: '2-4%',
-    description: 'Expertise en gestion d\'actifs depuis 1805'
+    description: "Expertise en gestion d'actifs depuis 1805"
   },
   {
     nom: 'SAST BVG-Nachhaltigkeit Rendite A',
@@ -290,113 +290,409 @@ const getRisqueColor = (risque: string) => {
 };
 
 export default function PortefeuillesPartenaires() {
-  const [expandedFond, setExpandedFond] = useState<string | false>(false);
   const [selectedCategorie, setSelectedCategorie] = useState<keyof typeof FONDS_CATEGORIES | 'TOUS'>('TOUS');
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [expandedFond, setExpandedFond] = useState<string | null>(null);
+  const [isChanging, setIsChanging] = useState(false);
 
-  const handleFondChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpandedFond(isExpanded ? panel : false);
+  const handleFondChange = (isin: string) => {
+    setExpandedFond(expandedFond === isin ? null : isin);
   };
 
   const filteredFonds = selectedCategorie === 'TOUS' 
     ? FONDS 
     : FONDS.filter(fond => fond.categorie === selectedCategorie);
 
+  // Effet de transition lors du changement de catégorie
+  useEffect(() => {
+    setIsChanging(true);
+    const timer = setTimeout(() => setIsChanging(false), 300);
+    return () => clearTimeout(timer);
+  }, [selectedCategorie]);
+
   return (
-    <Box sx={{ py: 6, px: 4 }}>
-      <Typography
-        variant="h4"
-        component="h2"
+    <Box 
+      sx={{ 
+        py: 6, 
+        px: 4,
+        '@keyframes fadeIn': {
+          from: { opacity: 0, transform: 'translateY(-20px)' },
+          to: { opacity: 1, transform: 'translateY(0)' }
+        },
+        '@keyframes slideUp': {
+          from: { opacity: 0, transform: 'translateY(20px)' },
+          to: { opacity: 1, transform: 'translateY(0)' }
+        },
+        '@keyframes textSlide': {
+          '0%': { transform: 'translateX(-100%)', opacity: 0 },
+          '100%': { transform: 'translateX(0)', opacity: 1 }
+        },
+        '@keyframes rippleEffect': {
+          '0%': { transform: 'scale(1)', opacity: 0.4 },
+          '100%': { transform: 'scale(2)', opacity: 0 }
+        },
+        '@keyframes pulse': {
+          '0%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(33,150,243,0.4)' },
+          '70%': { transform: 'scale(1.1)', boxShadow: '0 0 0 10px rgba(33,150,243,0)' },
+          '100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(33,150,243,0)' }
+        }
+      }}
+    >
+      <Paper 
+        elevation={3}
         sx={{
-          mb: 4,
-          textAlign: 'center',
-          fontWeight: 600,
-          background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          color: 'transparent',
+          p: 4,
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px',
+          transition: 'all 0.3s ease',
+          animation: 'fadeIn 0.6s ease-out',
+          position: 'relative',
+          overflow: 'hidden',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+          },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: '-100%',
+            width: '200%',
+            height: '100%',
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+            transition: 'all 0.5s ease',
+          },
+          '&:hover::before': {
+            left: '100%',
+          }
         }}
       >
-        Portefeuilles
-      </Typography>
-
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
-        <Button
-          variant={selectedCategorie === 'TOUS' ? 'contained' : 'outlined'}
-          onClick={() => setSelectedCategorie('TOUS')}
+        <Typography
+          variant="h4"
+          component="h2"
+          sx={{
+            mb: 4,
+            textAlign: 'center',
+            fontWeight: 700,
+            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            position: 'relative',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '50px',
+              height: '3px',
+              background: 'linear-gradient(90deg, #2196F3, #21CBF3)',
+              borderRadius: '3px',
+              animation: 'pulse 2s infinite'
+            }
+          }}
         >
-          Tous les fonds
-        </Button>
-        {Object.entries(FONDS_CATEGORIES).map(([key, label]) => (
-          <Button
-            key={key}
-            variant={selectedCategorie === key ? 'contained' : 'outlined'}
-            onClick={() => setSelectedCategorie(key as keyof typeof FONDS_CATEGORIES)}
-          >
-            {label}
-          </Button>
-        ))}
-      </Box>
+          Présentation des Portefeuilles
+        </Typography>
 
-      <Grid container spacing={3}>
-        {filteredFonds.map((fond) => (
-          <Grid item xs={12} md={6} key={fond.isin}>
-            <Accordion
-              expanded={expandedFond === fond.isin}
-              onChange={handleFondChange(fond.isin)}
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 3,
+          animation: 'slideUp 0.8s ease-out'
+        }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              textAlign: 'center',
+              fontWeight: 500,
+              opacity: 0.9,
+              animation: 'textSlide 1s ease-out',
+              background: 'linear-gradient(45deg, #666, #999)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent'
+            }}
+          >
+            Découvrez notre sélection de portefeuilles adaptés à vos objectifs
+          </Typography>
+
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: 2,
+            flexWrap: 'wrap',
+            opacity: isChanging ? 0 : 1,
+            transition: 'opacity 0.3s ease'
+          }}>
+            <Button
+              variant={selectedCategorie === 'TOUS' ? 'contained' : 'outlined'}
+              onClick={() => setSelectedCategorie('TOUS')}
+              onMouseEnter={() => setHoveredButton('TOUS')}
+              onMouseLeave={() => setHoveredButton(null)}
               sx={{
-                '&:before': {
-                  display: 'none',
+                borderRadius: '15px',
+                px: 3,
+                py: 1.5,
+                transition: 'all 0.3s ease',
+                transform: hoveredButton === 'TOUS' ? 'scale(1.05)' : 'scale(1)',
+                boxShadow: hoveredButton === 'TOUS' ? '0 4px 20px rgba(33,150,243,0.3)' : 'none',
+                background: selectedCategorie === 'TOUS' 
+                  ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+                  : 'transparent',
+                position: 'relative',
+                overflow: 'hidden',
+                '&:hover': {
+                  background: selectedCategorie === 'TOUS'
+                    ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+                    : 'rgba(33,150,243,0.1)',
+                  '&::after': {
+                    animation: 'rippleEffect 0.8s ease-out'
+                  }
                 },
-                borderLeft: '4px solid',
-                borderColor: getRisqueColor(fond.risque),
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '100%',
+                  height: '100%',
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: '15px'
+                }
               }}
             >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+              Tous les portefeuilles
+            </Button>
+            {Object.entries(FONDS_CATEGORIES).map(([key, label]) => (
+              <Button
+                key={key}
+                variant={selectedCategorie === key ? 'contained' : 'outlined'}
+                onClick={() => setSelectedCategorie(key as keyof typeof FONDS_CATEGORIES)}
+                onMouseEnter={() => setHoveredButton(key)}
+                onMouseLeave={() => setHoveredButton(null)}
+                sx={{
+                  borderRadius: '15px',
+                  px: 3,
+                  py: 1.5,
+                  transition: 'all 0.3s ease',
+                  transform: hoveredButton === key ? 'scale(1.05)' : 'scale(1)',
+                  boxShadow: hoveredButton === key ? '0 4px 20px rgba(33,150,243,0.3)' : 'none',
+                  background: selectedCategorie === key 
+                    ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+                    : 'transparent',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    background: selectedCategorie === key
+                      ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+                      : 'rgba(33,150,243,0.1)',
+                    '&::after': {
+                      animation: 'rippleEffect 0.8s ease-out'
+                    }
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(255,255,255,0.2)',
+                    borderRadius: '15px'
+                  }
+                }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {fond.nom}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {FONDS_CATEGORIES[fond.categorie]}
-                  </Typography>
-                </Box>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Typography variant="body2">
-                    <strong>ISIN:</strong> {fond.isin}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2">
-                      <strong>Niveau de risque:</strong>
-                    </Typography>
+                {label}
+              </Button>
+            ))}
+          </Box>
+        </Box>
+      </Paper>
+
+      <Grid container spacing={3} sx={{ mt: 4 }}>
+        {filteredFonds.map((fond, index) => (
+          <Grid item xs={12} md={6} key={fond.isin}>
+            <Paper
+              elevation={2}
+              sx={{
+                borderRadius: '15px',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                transform: `translateY(${index * 20}px)`,
+                animation: `slideIn 0.5s ease-out ${index * 0.1}s forwards`,
+                opacity: 0,
+                position: 'relative',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-100%',
+                  width: '200%',
+                  height: '100%',
+                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  transition: 'all 0.5s ease',
+                },
+                '&:hover::before': {
+                  left: '100%',
+                },
+                '@keyframes slideIn': {
+                  from: {
+                    opacity: 0,
+                    transform: 'translateY(50px)',
+                  },
+                  to: {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                  },
+                },
+              }}
+            >
+              <Accordion
+                expanded={expandedFond === fond.isin}
+                onChange={() => handleFondChange(fond.isin)}
+                sx={{
+                  background: 'transparent',
+                  boxShadow: 'none',
+                  '&:before': {
+                    display: 'none',
+                  },
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={
                     <Box
                       sx={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        bgcolor: getRisqueColor(fond.risque),
+                        transform: expandedFond === fond.isin ? 'rotate(180deg)' : 'rotate(0)',
+                        transition: 'transform 0.3s ease',
                       }}
-                    />
-                    <Typography variant="body2">
-                      {fond.risque}
+                    >
+                      <ExpandMoreIcon />
+                    </Box>
+                  }
+                  sx={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, rgba(33,150,243,0.1) 0%, rgba(33,150,243,0.05) 100%)',
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 600,
+                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        color: 'transparent',
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      {fond.nom}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        animation: 'fadeIn 0.5s ease-out',
+                      }}
+                    >
+                      {FONDS_CATEGORIES[fond.categorie]}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2">
-                      <strong>Rendement cible:</strong> {fond.rendementCible}
-                    </Typography>
-                    <Tooltip title="Rendement annuel moyen estimé">
-                      <IconButton size="small">
-                        <InfoIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                </AccordionSummary>
+                <AccordionDetails
+                  sx={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+                    animation: expandedFond === fond.isin ? 'expandContent 0.3s ease-out' : 'none',
+                    '@keyframes expandContent': {
+                      from: {
+                        opacity: 0,
+                        transform: 'translateY(-10px)',
+                      },
+                      to: {
+                        opacity: 1,
+                        transform: 'translateY(0)',
+                      },
+                    },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        animation: 'slideRight 0.3s ease-out',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight={600}>
+                        ISIN:
+                      </Typography>
+                      <Typography variant="body2">{fond.isin}</Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        animation: 'slideRight 0.4s ease-out',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight={600}>
+                        Niveau de risque:
+                      </Typography>
+                      <Box
+                        sx={{
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: '15px',
+                          background: `linear-gradient(45deg, ${getRisqueColor(fond.risque)}, ${getRisqueColor(fond.risque)}88)`,
+                          color: 'white',
+                          animation: 'pulse 2s infinite',
+                        }}
+                      >
+                        <Typography variant="body2">
+                          {fond.risque}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        animation: 'slideRight 0.5s ease-out',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight={600}>
+                        Rendement cible:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'primary.main',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {fond.rendementCible}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
+                </AccordionDetails>
+              </Accordion>
+            </Paper>
           </Grid>
         ))}
       </Grid>

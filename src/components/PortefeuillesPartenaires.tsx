@@ -95,7 +95,8 @@ const FONDS: FondInfo[] = [
     isin: 'CH0016431667',
     categorie: 'FAIBLE',
     risque: 'Faible',
-    rendementCible: '2-4%'
+    rendementCible: '2-4%',
+    description: 'Expertise en gestion d\'actifs depuis 1805'
   },
   {
     nom: 'SAST BVG-Nachhaltigkeit Rendite A',
@@ -272,6 +273,7 @@ interface FondInfo {
   categorie: keyof typeof FONDS_CATEGORIES;
   risque: 'Faible' | 'Modéré' | 'Élevé';
   rendementCible: string;
+  description?: string;
 }
 
 const getRisqueColor = (risque: string) => {

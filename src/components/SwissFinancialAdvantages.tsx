@@ -138,6 +138,11 @@ const SwissFinancialAdvantages = () => {
           boxShadow: '0 12px 48px 0 rgba(29,161,242,0.13), 0 2px 32px 0 rgba(29,161,242,0.08)',
           position: 'relative',
           animation: `${zoomIn} 0.7s cubic-bezier(0.4,0,0.2,1)`,
+          transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+          },
           '&:after': {
             content: '""',
             position: 'absolute',
@@ -228,7 +233,7 @@ const SwissFinancialAdvantages = () => {
                 pb: 1.5,
                 borderRadius: '22px',
                 backgroundColor: COLOR_CARD_BG,
-                transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                 opacity: 0,
                 animation: `${fadeIn} 0.6s ease-out ${index * 0.12}s forwards`,
                 display: 'flex',
@@ -241,8 +246,8 @@ const SwissFinancialAdvantages = () => {
                 boxShadow: '0 2px 16px 0 rgba(29,161,242,0.07)',
                 mb: { xs: 4, md: 0 },
                 '&:hover': {
-                  transform: 'translateY(-10px) scale(1.025)',
-                  boxShadow: `0 16px 48px 0 ${COLOR_PRIMARY}22`,
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.13)',
                   borderColor: 'transparent',
                   '& .icon-box': {
                     backgroundColor: COLOR_PRIMARY,

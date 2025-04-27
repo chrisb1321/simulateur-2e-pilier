@@ -13,6 +13,7 @@ import PortefeuillesPartenaires from './components/PortefeuillesPartenaires'
 import SwissFinancialAdvantages from './components/SwissFinancialAdvantages'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import CustomButton from './components/CustomButton'
+import RenteEtTroisiemePillier from './components/RenteEtTroisiemePillier'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -218,7 +219,8 @@ function App() {
             <Tab label="Simulation" />
             <Tab label="Configuration" />
             <Tab label="Recherche des avoirs LPP" />
-              <Tab label="Portefeuilles" />
+            <Tab label="Portefeuilles" />
+            <Tab label="Rente AVS/LPP" />
           </Tabs>
         </Box>
 
@@ -401,6 +403,10 @@ function App() {
 
           <TabPanel value={activeTab} index={4}>
             <PortefeuillesPartenaires />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={5}>
+            <RenteEtTroisiemePillier />
           </TabPanel>
       </Box>
       </Container>

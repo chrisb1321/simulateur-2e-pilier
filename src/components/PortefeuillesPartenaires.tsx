@@ -435,7 +435,8 @@ export default function PortefeuillesPartenaires() {
               onMouseEnter={() => setHoveredButton('TOUS')}
               onMouseLeave={() => setHoveredButton(null)}
               sx={{
-                ...(selectedCategorie === 'TOUS' ? {} : { color: '#2196F3' }),
+                color: '#fff',
+                ...(selectedCategorie === 'TOUS' ? {} : { }),
                 ...(hoveredButton === 'TOUS' ? { transform: 'scale(1.05)', boxShadow: '0 4px 20px rgba(33,150,243,0.3)' } : {}),
               }}
             >
@@ -449,7 +450,8 @@ export default function PortefeuillesPartenaires() {
                 onMouseEnter={() => setHoveredButton(key)}
                 onMouseLeave={() => setHoveredButton(null)}
                 sx={{
-                  ...(selectedCategorie === key ? {} : { color: '#2196F3' }),
+                  color: '#fff',
+                  ...(selectedCategorie === key ? {} : { }),
                   ...(hoveredButton === key ? { transform: 'scale(1.05)', boxShadow: '0 4px 20px rgba(33,150,243,0.3)' } : {}),
                 }}
               >

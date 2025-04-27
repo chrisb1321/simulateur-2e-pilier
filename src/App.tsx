@@ -380,6 +380,7 @@ function App() {
                 href="https://forms.zohopublic.eu/swissfinancial1/form/Mandatderecherche/formperma/3jgRf4_IBYaeKKVqF55iy2gBp8Gwz4S2P8PGgxMmi1c?zf_pf_id=956584"
                 target="_blank"
                 rel="noopener noreferrer"
+                {...({} as any)}
               >
                 Lancer la recherche
               </CustomButton>

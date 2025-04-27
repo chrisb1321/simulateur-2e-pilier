@@ -1,8 +1,9 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Label } from 'recharts';
-import { Paper, Typography, Box, Divider, Grid, keyframes, Button } from '@mui/material';
+import { Paper, Typography, Box, Divider, Grid, keyframes } from '@mui/material';
 import { useTheme } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import ArticleIcon from '@mui/icons-material/Article';
+import CustomButton from './CustomButton';
 
 const pulseAnimation = keyframes`
   0% {
@@ -464,27 +465,15 @@ export default function DiagrammeComparatif({
               Documents relatifs à votre profil d'investissement
             </Typography>
             
-            <Button
+            <CustomButton
               variant="contained"
               startIcon={<ArticleIcon />}
               endIcon={<DownloadIcon />}
               onClick={handleDownload}
-              sx={{
-                px: 4,
-                py: 1.5,
-                borderRadius: 2,
-                backgroundColor: theme.palette.primary.main,
-                color: 'white',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  backgroundColor: theme.palette.primary.dark,
-                  transform: 'translateY(-2px)',
-                  boxShadow: theme.shadows[4],
-                }
-              }}
+              sx={{ px: 4, py: 1.5 }}
             >
               Télécharger la présentation {profilInvestissement}
-            </Button>
+            </CustomButton>
             
             <Typography 
               variant="caption" 

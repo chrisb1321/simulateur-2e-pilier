@@ -2,7 +2,8 @@ import { Box, Card, Typography, Grid, Tooltip, IconButton, Accordion, AccordionS
 import { useState, useEffect } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Button } from '@mui/material';
+import CustomButton from './CustomButton';
+import LockIcon from '@mui/icons-material/Lock';
 
 const FONDS_CATEGORIES = {
   FAIBLE: 'Profil 25 - Défensif',
@@ -428,94 +429,38 @@ export default function PortefeuillesPartenaires() {
             opacity: isChanging ? 0 : 1,
             transition: 'opacity 0.3s ease'
           }}>
-            <Button
+            <CustomButton
               variant={selectedCategorie === 'TOUS' ? 'contained' : 'outlined'}
               onClick={() => setSelectedCategorie('TOUS')}
               onMouseEnter={() => setHoveredButton('TOUS')}
               onMouseLeave={() => setHoveredButton(null)}
               sx={{
-                borderRadius: '15px',
-                px: 3,
-                py: 1.5,
-                transition: 'all 0.3s ease',
-                transform: hoveredButton === 'TOUS' ? 'scale(1.05)' : 'scale(1)',
-                boxShadow: hoveredButton === 'TOUS' ? '0 4px 20px rgba(33,150,243,0.3)' : 'none',
-                background: selectedCategorie === 'TOUS' 
-                  ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
-                  : 'transparent',
-                position: 'relative',
-                overflow: 'hidden',
-                '&:hover': {
-                  background: selectedCategorie === 'TOUS'
-                    ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
-                    : 'rgba(33,150,243,0.1)',
-                  '&::after': {
-                    animation: 'rippleEffect 0.8s ease-out'
-                  }
-                },
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '100%',
-                  height: '100%',
-                  background: 'rgba(255,255,255,0.2)',
-                  borderRadius: '15px'
-                }
+                ...(selectedCategorie === 'TOUS' ? {} : { color: '#2196F3' }),
+                ...(hoveredButton === 'TOUS' ? { transform: 'scale(1.05)', boxShadow: '0 4px 20px rgba(33,150,243,0.3)' } : {}),
               }}
             >
-              Tous les portefeuilles
-            </Button>
+              TOUS LES PORTEFEUILLES
+            </CustomButton>
             {Object.entries(FONDS_CATEGORIES).map(([key, label]) => (
-              <Button
+              <CustomButton
                 key={key}
                 variant={selectedCategorie === key ? 'contained' : 'outlined'}
                 onClick={() => setSelectedCategorie(key as keyof typeof FONDS_CATEGORIES)}
                 onMouseEnter={() => setHoveredButton(key)}
                 onMouseLeave={() => setHoveredButton(null)}
                 sx={{
-                  borderRadius: '15px',
-                  px: 3,
-                  py: 1.5,
-                  transition: 'all 0.3s ease',
-                  transform: hoveredButton === key ? 'scale(1.05)' : 'scale(1)',
-                  boxShadow: hoveredButton === key ? '0 4px 20px rgba(33,150,243,0.3)' : 'none',
-                  background: selectedCategorie === key 
-                    ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
-                    : 'transparent',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&:hover': {
-                    background: selectedCategorie === key
-                      ? 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
-                      : 'rgba(33,150,243,0.1)',
-                    '&::after': {
-                      animation: 'rippleEffect 0.8s ease-out'
-                    }
-                  },
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '100%',
-                    height: '100%',
-                    background: 'rgba(255,255,255,0.2)',
-                    borderRadius: '15px'
-                  }
+                  ...(selectedCategorie === key ? {} : { color: '#2196F3' }),
+                  ...(hoveredButton === key ? { transform: 'scale(1.05)', boxShadow: '0 4px 20px rgba(33,150,243,0.3)' } : {}),
                 }}
               >
                 {label}
-              </Button>
+              </CustomButton>
             ))}
           </Box>
         </Box>
       </Paper>
 
-      <Grid container spacing={3} sx={{ mt: 4 }}>
+      <Grid container spacing={3} sx={{ mt: 4, position: 'relative' }}>
         {filteredFonds.map((fond, index) => (
           <Grid item xs={12} md={6} key={fond.isin}>
             <Paper
@@ -563,9 +508,7 @@ export default function PortefeuillesPartenaires() {
                 sx={{
                   background: 'transparent',
                   boxShadow: 'none',
-                  '&:before': {
-                    display: 'none',
-                  },
+                  '&:before': { display: 'none' },
                 }}
               >
                 <AccordionSummary
@@ -695,7 +638,74 @@ export default function PortefeuillesPartenaires() {
             </Paper>
           </Grid>
         ))}
+        {/* Cartes fictives 'Bientôt disponible' */}
+        {[1,2,3].map((n) => (
+          <Grid item xs={12} md={6} key={`fictif-${n}`}>
+            <Paper
+              elevation={1}
+              sx={{
+                borderRadius: '15px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: 120,
+                py: 4,
+                background: 'linear-gradient(135deg, #f5fafd 60%, #e3f0fa 100%)',
+                filter: 'blur(1.5px) grayscale(0.5)',
+                opacity: 0.7,
+                position: 'relative',
+                boxShadow: '0 2px 12px 0 rgba(33,150,243,0.08)',
+                border: '1.5px dashed #b3d8f6',
+                transition: 'all 0.3s',
+              }}
+            >
+              <LockIcon sx={{ fontSize: 38, color: '#b3d8f6', mb: 1 }} />
+              <Typography variant="h6" sx={{ color: '#b3d8f6', fontWeight: 600 }}>
+                Bientôt disponible
+              </Typography>
+            </Paper>
+          </Grid>
+        ))}
+        {/* Dégradé en bas de la grille */}
+        <Box sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: -24,
+          height: 48,
+          pointerEvents: 'none',
+          background: 'linear-gradient(180deg, rgba(250,253,255,0) 0%, #fafdff 90%)',
+          zIndex: 10,
+        }} />
       </Grid>
+      {/* Bouton 'Voir plus de portefeuilles' */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CustomButton
+          variant="outlined"
+          size="large"
+          sx={{
+            px: 5,
+            py: 1.5,
+            fontWeight: 600,
+            color: '#2196F3',
+            borderColor: '#b3d8f6',
+            background: 'linear-gradient(90deg, #fafdff 60%, #e3f0fa 100%)',
+            boxShadow: '0 2px 12px 0 rgba(33,150,243,0.08)',
+            transition: 'all 0.3s',
+            '&:hover': {
+              background: 'linear-gradient(90deg, #e3f0fa 60%, #fafdff 100%)',
+              borderColor: '#2196F3',
+              color: '#2196F3',
+              boxShadow: '0 4px 20px rgba(33,150,243,0.13)',
+            }
+          }}
+          disabled
+        >
+          Voir plus de portefeuilles
+        </CustomButton>
+      </Box>
     </Box>
   );
 } 

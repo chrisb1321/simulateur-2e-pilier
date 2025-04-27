@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Container, Typography, Box, Tabs, Tab, Paper, Grid, TextField, InputAdornment, Slider, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Container, Typography, Box, Tabs, Tab, Paper, Grid, TextField, InputAdornment, Slider, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import FormulaireSimulation from './components/FormulaireSimulation'
 import TableauComparatif from './components/TableauComparatif'
 import GraphiqueEvolution from './components/GraphiqueEvolution'
@@ -12,6 +12,7 @@ import { Card, CardContent } from '@mui/material'
 import PortefeuillesPartenaires from './components/PortefeuillesPartenaires'
 import SwissFinancialAdvantages from './components/SwissFinancialAdvantages'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import CustomButton from './components/CustomButton'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -271,13 +272,12 @@ function App() {
               </Grid>
             </Grid>
             <Box sx={{ mt: 3 }}>
-              <Button
-                variant="contained"
+              <CustomButton
                 onClick={() => calculerSimulation()}
                 size="large"
               >
                 CALCULER LA SIMULATION
-              </Button>
+              </CustomButton>
             </Box>
           </Paper>
 
@@ -331,28 +331,13 @@ function App() {
                   >
                     Ouvrez un compte de libre passage avec Swiss Financial Advice et bénéficiez d'un accompagnement personnalisé pour maximiser votre capital.
                   </Typography>
-                  <Button
-                    variant="contained"
+                  <CustomButton
                     size="large"
                     startIcon={<AccountBalanceIcon />}
-                    sx={{
-                      py: 2,
-                      px: 6,
-                      borderRadius: 2,
-                      fontSize: '1.1rem',
-                      textTransform: 'none',
-                      background: theme => `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 12px 32px rgba(0,0,0,0.18)',
-                      }
-                    }}
                     onClick={() => window.open('https://business.zugerberg-finanz.ch/auth', '_blank')}
                   >
                     Ouvrir mon compte de libre passage
-                  </Button>
+                  </CustomButton>
                 </Box>
             </>
           )}
@@ -389,28 +374,15 @@ function App() {
             </Typography>
             
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-              <Button
-                variant="contained"
+              <CustomButton
                 size="large"
+                component="a"
                 href="https://forms.zohopublic.eu/swissfinancial1/form/Mandatderecherche/formperma/3jgRf4_IBYaeKKVqF55iy2gBp8Gwz4S2P8PGgxMmi1c?zf_pf_id=956584"
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontSize: '1.1rem',
-                  fontWeight: 500,
-                  px: 6,
-                  py: 2,
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                    boxShadow: theme.shadows[8],
-                  }
-                }}
               >
                 Lancer la recherche
-              </Button>
+              </CustomButton>
             </Box>
             
             <Typography 

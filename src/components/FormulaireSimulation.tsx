@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import {
   TextField,
-  Button,
   Paper,
   Typography,
   Box,
 } from '@mui/material';
+import CustomButton from './CustomButton';
 import { SimulationInput } from '../types/simulation';
 
 interface FormulaireSimulationProps {
@@ -133,15 +133,13 @@ export default function FormulaireSimulation({
             />
           </Box>
           <Box sx={{ gridColumn: '1 / -1' }}>
-            <Button
+            <CustomButton
               type="submit"
-              variant="contained"
-              color="primary"
               fullWidth
               size="large"
             >
               Calculer la simulation
-            </Button>
+            </CustomButton>
           </Box>
         </Box>
       </form>

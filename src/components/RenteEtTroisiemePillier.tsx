@@ -4,9 +4,11 @@ import { useTheme } from '@mui/material/styles';
 import CustomButton from './CustomButton';
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded';
 import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded';
+import InfoIcon from '@mui/icons-material/Info';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 
 const AGE_RETRAITE = 65;
-const RENTE_AVS_MAX = 29680; // CHF/an (2024)
+const RENTE_AVS_MAX = 30240; // CHF/an (2025) - 2'520 CHF/mois pour 44 années de cotisation
 const ANNEES_COTISATION_PLEINE = 44;
 const SALAIRE_MOYEN_MAX = 88200; // CHF/an (2024)
 
@@ -34,7 +36,7 @@ export default function RenteEtTroisiemePillier() {
 
   const calculerRentes = () => {
     // Calcul AVS
-    const tauxCotisation = Math.min(anneesCotAVS / ANNEES_COTISATION_PLEINE, 1);
+    const tauxCotisation = 1; // Toujours 44 années de cotisation
     const facteurSalaire = Math.min(salaireMoyen / SALAIRE_MOYEN_MAX, 1);
     let renteAVS = RENTE_AVS_MAX * tauxCotisation * facteurSalaire;
     if (situation === 'marie') renteAVS = Math.min(renteAVS, RENTE_AVS_MAX * 0.75); // Plafond couple
@@ -64,9 +66,6 @@ export default function RenteEtTroisiemePillier() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label="Salaire annuel moyen (CHF)" type="number" value={salaireMoyen} onChange={e => setSalaireMoyen(Number(e.target.value))} fullWidth />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField label="Années de cotisation AVS" type="number" value={anneesCotAVS} onChange={e => setAnneesCotAVS(Number(e.target.value))} fullWidth />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label="Capital LPP estimé à la retraite (CHF)" type="number" value={capitalLPP} onChange={e => setCapitalLPP(Number(e.target.value))} fullWidth />
@@ -132,80 +131,48 @@ export default function RenteEtTroisiemePillier() {
         </CustomButton>
       </Box>
       {resultat && (
-        <Box sx={{ mt: 4, p: 3, borderRadius: 2, background: '#fafbfc', boxShadow: 1 }}>
+        <Box sx={{ mt: 4, p: 3, borderRadius: 2, background: '#f5fafd', boxShadow: 1 }}>
           <Typography variant="h6" fontWeight={600} gutterBottom>
-            Résultats détaillés
+            Résumé visuel de votre prévoyance (en CHF/mois)
           </Typography>
-          <Grid container spacing={1} sx={{ mb: 2 }}>
-            <Grid item xs={7}>
-              <Typography>Rente AVS estimée :</Typography>
-            </Grid>
-            <Grid item xs={5} sx={{ textAlign: 'right' }}>
-              <Typography fontWeight={700} color="primary">
-                {resultat.renteAVS.toLocaleString('fr-CH', { style: 'currency', currency: 'CHF', minimumFractionDigits: 0 })} / an
-              </Typography>
-            </Grid>
-            <Grid item xs={7}>
-              <Typography>Rente LPP estimée :</Typography>
-            </Grid>
-            <Grid item xs={5} sx={{ textAlign: 'right' }}>
-              <Typography fontWeight={700} color="primary">
-                {resultat.renteLPP.toLocaleString('fr-CH', { style: 'currency', currency: 'CHF', minimumFractionDigits: 0 })} / an
-              </Typography>
-            </Grid>
-            <Grid item xs={7}>
-              <Typography>Total rentes 1er + 2e pilier :</Typography>
-            </Grid>
-            <Grid item xs={5} sx={{ textAlign: 'right' }}>
-              <Typography fontWeight={700} color="secondary">
-                {resultat.totalRentes.toLocaleString('fr-CH', { style: 'currency', currency: 'CHF', minimumFractionDigits: 0 })} / an
-              </Typography>
-            </Grid>
-            <Grid item xs={7}>
-              <Typography>Revenu souhaité :</Typography>
-            </Grid>
-            <Grid item xs={5} sx={{ textAlign: 'right' }}>
-              <Typography fontWeight={700}>
-                {revenuSouhaite.toLocaleString('fr-CH', { style: 'currency', currency: 'CHF', minimumFractionDigits: 0 })} / an
-              </Typography>
-            </Grid>
-          </Grid>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={[
+              { name: 'AVS', value: Math.round(resultat.renteAVS / 12), fill: '#1976d2' },
+              { name: 'LPP', value: Math.round(resultat.renteLPP / 12), fill: '#43a047' },
+              { name: 'Total', value: Math.round(resultat.totalRentes / 12), fill: '#8e24aa' },
+              { name: 'Objectif', value: Math.round(revenuSouhaite / 12), fill: '#ffb300' },
+            ]} layout="vertical" margin={{ left: 40, right: 40 }}>
+              <XAxis type="number" hide />
+              <YAxis type="category" dataKey="name" />
+              <Tooltip formatter={(v: number) => `${v.toLocaleString('fr-CH')} CHF/mois`} />
+              <Bar dataKey="value" isAnimationActive>
+                <LabelList dataKey="value" position="right" formatter={(v: number) => `${v.toLocaleString('fr-CH')} CHF/mois`} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <Box sx={{ mt: 3 }}>
+            <Typography>
+              <b>Rente AVS :</b> <span style={{ color: '#1976d2', fontWeight: 700 }}>{Math.round(resultat.renteAVS / 12).toLocaleString('fr-CH')} CHF/mois</span>
+            </Typography>
+            <Typography>
+              <b>Rente LPP :</b> <span style={{ color: '#43a047', fontWeight: 700 }}>{Math.round(resultat.renteLPP / 12).toLocaleString('fr-CH')} CHF/mois</span>
+            </Typography>
+            <Typography>
+              <b>Total rentes :</b> <span style={{ color: '#8e24aa', fontWeight: 700 }}>{Math.round(resultat.totalRentes / 12).toLocaleString('fr-CH')} CHF/mois</span>
+            </Typography>
+            <Typography>
+              <b>Objectif :</b> <span style={{ color: '#ffb300', fontWeight: 700 }}>{Math.round(revenuSouhaite / 12).toLocaleString('fr-CH')} CHF/mois</span>
+            </Typography>
+          </Box>
           {resultat.manque > 0 ? (
-            <Alert
-              icon={<WarningAmberRounded color="warning" />}
-              severity="warning"
-              sx={{
-                mt: 2,
-                background: '#fff8e1',
-                color: '#8d6e63',
-                fontWeight: 500,
-                border: '1px solid #ffe0b2'
-              }}
-            >
-              <Typography component="span" fontWeight={700} color="error.main">
-                Il vous manque {resultat.manque.toLocaleString('fr-CH', { style: 'currency', currency: 'CHF', minimumFractionDigits: 0 })} par an
-              </Typography>
-              {" pour atteindre votre objectif."}
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              <b>Il vous manque {Math.round(resultat.manque / 12).toLocaleString('fr-CH')} CHF/mois</b> pour atteindre votre objectif.
               <br />
-              <Typography component="span" fontWeight={700}>
-                Un <b>3e pilier</b> pourrait vous permettre de combler ce manque.
-              </Typography>
+              <b>Un 3e pilier pourrait vous permettre de combler ce manque.</b>
             </Alert>
           ) : (
-            <Alert
-              icon={<CheckCircleRounded color="success" />}
-              severity="success"
-              sx={{
-                mt: 2,
-                background: '#e8f5e9',
-                color: '#388e3c',
-                fontWeight: 500,
-                border: '1px solid #c8e6c9'
-              }}
-            >
-              <Typography component="span" fontWeight={700} color="success.main">
-                Félicitations, votre prévoyance couvre votre objectif de revenu à la retraite !
-              </Typography>
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <b>Félicitations, votre prévoyance couvre votre objectif de revenu à la retraite !</b>
             </Alert>
           )}
         </Box>

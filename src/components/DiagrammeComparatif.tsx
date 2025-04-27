@@ -67,7 +67,8 @@ export default function DiagrammeComparatif({
 
   const total = capitalInitial + interetsCumules;
   const totalAvecFraisMarche = total - fraisEntreeMarche;
-  const totalAvecFraisSFA = total - fraisEntreeSFA;
+  const fraisEntreeSFAPlafonne = Math.min(fraisEntreeSFA, 12000);
+  const totalAvecFraisSFA = total - fraisEntreeSFAPlafonne;
   const difference = totalAvecFraisSFA - totalAvecFraisMarche;
 
   const data = [
@@ -84,10 +85,10 @@ export default function DiagrammeComparatif({
       percentage: formatPercentage(interetsCumules, total)
     },
     { 
-      name: 'Droits d\'entrée avec SFA', 
-      value: fraisEntreeSFA, 
+      name: "Droits d'entrée avec SFA", 
+      value: fraisEntreeSFAPlafonne, 
       color: theme.palette.grey[700],
-      percentage: formatPercentage(fraisEntreeSFA, total)
+      percentage: formatPercentage(fraisEntreeSFAPlafonne, total)
     },
   ];
 
@@ -330,7 +331,7 @@ export default function DiagrammeComparatif({
             {[
               { label: 'Capital initial', value: capitalInitial, color: theme.palette.primary.main },
               { label: 'Intérêts cumulés', value: interetsCumules, color: theme.palette.success.main },
-              { label: 'Droits d\'entrée avec SFA', value: fraisEntreeSFA, color: theme.palette.grey[700] }
+              { label: "Droits d'entrée avec SFA", value: fraisEntreeSFAPlafonne, color: theme.palette.grey[700] }
             ].map((item, index) => (
               <Box
                 key={item.label}

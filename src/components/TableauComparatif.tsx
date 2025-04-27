@@ -13,6 +13,14 @@ import {
   Collapse,
   TextField,
   FormControl,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Select,
+  InputLabel,
 } from '@mui/material';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { SimulationScenario } from '../types/simulation';
@@ -120,6 +128,13 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
   const theme = useTheme();
   const [nombreChangements, setNombreChangements] = useState<number>(0);
   const [showChangements, setShowChangements] = useState<boolean>(false);
+  const [sfaClickCount, setSfaClickCount] = useState(0);
+  const [lastSfaClickTime, setLastSfaClickTime] = useState<number | null>(null);
+  const [showNegociationButton, setShowNegociationButton] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [raison, setRaison] = useState('');
+  const [details, setDetails] = useState('');
+  const [confirmation, setConfirmation] = useState(false);
 
   const droitsEntreeTexteGauche = "Droits d'entrée 3% (moy. du marché)";
   const droitsEntreeTexteDroite = "Droits d'entrée avec SFA";
@@ -172,16 +187,18 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     const interetsCumules = scenarioSelectionne.resultat.interetsCumules;
     const fraisEntreeMarche = capitalInitial * tauxRendement.FRAIS_ENTREE_MARCHE;
     const fraisEntreeSFA = capitalInitial * tauxRendement.FRAIS_ENTREE_SFA;
+    const fraisEntreeSFAPlafonne = Math.min(fraisEntreeSFA, 12000);
     const fraisChangementFondation = nombreChangements * (capitalInitial * 0.03);
     const fraisChangementFondationSFA = 0;
 
     const estimationNetteMarche = capitalInitial + interetsCumules - fraisEntreeMarche - fraisChangementFondation;
-    const estimationNetteSFA = capitalInitial + interetsCumules - fraisEntreeSFA - fraisChangementFondationSFA;
+    const estimationNetteSFA = capitalInitial + interetsCumules - fraisEntreeSFAPlafonne - fraisChangementFondationSFA;
 
     return {
       interetsCumules,
       fraisEntreeMarche,
       fraisEntreeSFA,
+      fraisEntreeSFAPlafonne,
       fraisChangementFondation,
       fraisChangementFondationSFA,
       estimationNetteMarche,
@@ -190,6 +207,37 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
   };
 
   const differences = calculerDifferences();
+
+  const handleSfaClick = () => {
+    const now = Date.now();
+    if (lastSfaClickTime && now - lastSfaClickTime < 600) {
+      const newCount = sfaClickCount + 1;
+      setSfaClickCount(newCount);
+      setLastSfaClickTime(now);
+      if (newCount === 3) {
+        setShowNegociationButton(true);
+      }
+    } else {
+      setSfaClickCount(1);
+      setLastSfaClickTime(now);
+    }
+  };
+
+  const handleOpenNegociationModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setRaison('');
+    setDetails('');
+    setConfirmation(false);
+  };
+
+  const handleSendRequest = () => {
+    setConfirmation(true);
+    // Ici, tu pourrais envoyer la demande à un backend ou un service email
+  };
 
   return (
     <>
@@ -407,10 +455,22 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                               sx={{ 
                                 fontWeight: 500,
                                 verticalAlign: 'top',
-                                pt: 2
+                                pt: 2,
+                                cursor: 'pointer'
                               }}
+                              onClick={handleSfaClick}
                             >
-                              {formatCurrency(differences.fraisEntreeSFA)}
+                              {formatCurrency(differences.fraisEntreeSFAPlafonne)}
+                              {showNegociationButton && (
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={handleOpenNegociationModal}
+                                  sx={{ mt: 2 }}
+                                >
+                                  Demande spéciale à la direction
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                           {nombreChangements > 0 && (
@@ -626,6 +686,54 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="sm" fullWidth>
+        <DialogTitle>Demande spéciale à la direction</DialogTitle>
+        <DialogContent>
+          {confirmation ? (
+            <Typography sx={{ my: 2 }} color="success.main">
+              Votre demande a bien été transmise à la direction. Nous vous contacterons rapidement.
+            </Typography>
+          ) : (
+            <>
+              <InputLabel id="raison-label" sx={{ mt: 1 }}>Raison de la demande</InputLabel>
+              <Select
+                labelId="raison-label"
+                value={raison}
+                onChange={e => setRaison(e.target.value)}
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                <MenuItem value="Client de longue date">Client de longue date</MenuItem>
+                <MenuItem value="Montant supérieur à 3 millions">Montant supérieur à 3 millions</MenuItem>
+                <MenuItem value="Situation patrimoniale complexe">Situation patrimoniale complexe</MenuItem>
+                <MenuItem value="Négociation institutionnelle">Négociation institutionnelle</MenuItem>
+                <MenuItem value="Autre">Autre</MenuItem>
+              </Select>
+              <TextField
+                label="Détails complémentaires (optionnel)"
+                multiline
+                minRows={3}
+                value={details}
+                onChange={e => setDetails(e.target.value)}
+                fullWidth
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {confirmation ? (
+            <Button onClick={handleCloseModal} color="primary">Fermer</Button>
+          ) : (
+            <>
+              <Button onClick={handleCloseModal}>Annuler</Button>
+              <Button onClick={handleSendRequest} variant="contained" color="primary" disabled={!raison}>
+                Envoyer la demande
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </>
   );
 } 

@@ -85,6 +85,7 @@ export default function LoadingSimulation({ isLoading }: LoadingSimulationProps)
         animationDuration: '0.5s, 2s',
         animationTimingFunction: 'ease-in-out, ease-in-out',
         animationIterationCount: '1, infinite',
+        borderColor: 'transparent',
         '@keyframes fadeIn': {
           '0%': {
             opacity: 0,
@@ -96,9 +97,9 @@ export default function LoadingSimulation({ isLoading }: LoadingSimulationProps)
           },
         },
         '@keyframes borderPulse': {
-          '0%': { borderColor: 'rgba(33,150,243,0.5)' },
-          '50%': { borderColor: 'rgba(33,150,243,1)' },
-          '100%': { borderColor: 'rgba(33,150,243,0.5)' },
+          '0%': { borderImage: 'linear-gradient(90deg, #2196F3 30%, #21CBF3 90%) 1' },
+          '50%': { borderImage: 'linear-gradient(90deg, #2196F3 60%, #21CBF3 100%) 1' },
+          '100%': { borderImage: 'linear-gradient(90deg, #2196F3 30%, #21CBF3 90%) 1' },
         },
         '&::before': {
           content: '""',
@@ -109,6 +110,9 @@ export default function LoadingSimulation({ isLoading }: LoadingSimulationProps)
           bottom: 0,
           background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.03), transparent)',
           animation: 'pulse 3s ease-in-out infinite',
+        },
+        '&::after': {
+          content: 'none',
         },
         '@keyframes pulse': {
           '0%': { opacity: 0.5 },

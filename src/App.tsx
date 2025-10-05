@@ -1,19 +1,22 @@
 import { useState } from 'react'
-import { Container, Typography, Box, Tabs, Tab, Paper, Grid, TextField, InputAdornment, Slider, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import FormulaireSimulation from './components/FormulaireSimulation'
+import { Container, Typography, Box, Tabs, Tab, Paper, Grid, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, IconButton, Tooltip } from '@mui/material'
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
 import TableauComparatif from './components/TableauComparatif'
 import GraphiqueEvolution from './components/GraphiqueEvolution'
 import ConfigurationTaux from './components/ConfigurationTaux'
-import { SimulationInput, SimulationScenario } from './types/simulation'
+import { SimulationScenario } from './types/simulation'
 import logo from './assets/images/logo.png'
 import LoadingSimulation from './components/LoadingSimulation'
 import { useTheme } from '@mui/material/styles'
-import { Card, CardContent } from '@mui/material'
 import PortefeuillesPartenaires from './components/PortefeuillesPartenaires'
 import SwissFinancialAdvantages from './components/SwissFinancialAdvantages'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import CustomButton from './components/CustomButton'
 import RenteEtTroisiemePillier from './components/RenteEtTroisiemePillier'
+import OffresCommerciales from './components/OffresCommerciales'
+import ComparateurAssurancesComplementaires from './components/assurances-complementaires/ComparateurAssurancesComplementaires'
+import SimulateurPilier3Wizard from './components/troisieme-pilier/SimulateurPilier3Wizard'
 
 // Constantes de configuration
 const CONSTANTS = {
@@ -60,6 +63,14 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+// Ajout du barème d'optimisation par offre
+const OPTIMISATION_OFFRES: Record<string, { reductionFrais: number; gainFiscal: number }> = {
+  Standard: { reductionFrais: 0, gainFiscal: 0 },
+  Confort: { reductionFrais: 0.10, gainFiscal: 1000 },
+  'Complète': { reductionFrais: 0.20, gainFiscal: 2000 },
+  Premium: { reductionFrais: 0.30, gainFiscal: 5000 },
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState(0);
   const [age, setAge] = useState<number>(30);
@@ -76,6 +87,7 @@ function App() {
     FRAIS_ENTREE_SFA: CONSTANTS.FRAIS_ENTREE * 0.5,
   });
   const theme = useTheme();
+  const [offreSelectionnee] = useState<string>('Standard');
 
   const handleTauxChange = (nouveauxTaux: typeof tauxRendement) => {
     setTauxRendement(nouveauxTaux);
@@ -86,12 +98,15 @@ function App() {
 
   const calculerSimulation = () => {
     setIsLoading(true);
-    setScenarios([]); // Réinitialiser les scénarios pendant le chargement
+    setScenarios([]);
 
-    // Simuler un délai de chargement pour montrer l'animation
     setTimeout(() => {
       const anneesRestantes = CONSTANTS.AGE_MAX - age;
       const capitalInitial = parseFloat(capital.replace(/[^0-9.-]+/g, ''));
+      const offre = offreSelectionnee || 'Standard';
+      const optimisation = OPTIMISATION_OFFRES[offre] || OPTIMISATION_OFFRES['Standard'];
+      // Application de la réduction sur les frais d'entrée SFA
+      const fraisEntreeOptimises = tauxRendement.FRAIS_ENTREE_SFA * (1 - optimisation.reductionFrais);
 
       const scenarioCash = calculerScenario(
         'Compte rémunéré',
@@ -101,41 +116,18 @@ function App() {
         0
       );
 
-      const scenarioEquilibre = calculerScenario(
-        'Allier sécurité et rendement',
+      const scenarioOptimise = calculerScenario(
+        `Simulation avec offre ${offre}`,
         tauxRendement.FAIBLE,
         capitalInitial,
         anneesRestantes,
-        tauxRendement.FRAIS_ENTREE_SFA
+        fraisEntreeOptimises,
+        optimisation.gainFiscal
       );
 
-      const scenarioCroissance = calculerScenario(
-        'Faire croître mon capital',
-        tauxRendement.MOYEN,
-        capitalInitial,
-        anneesRestantes,
-        tauxRendement.FRAIS_ENTREE_SFA
-      );
-
-      const scenarioDynamique = calculerScenario(
-        'Placement dynamique',
-        tauxRendement.ELEVE,
-        capitalInitial,
-        anneesRestantes,
-        tauxRendement.FRAIS_ENTREE_SFA
-      );
-
-      // Ajouter tous les scénarios
-      const nouveauxScenarios = [
-        scenarioCash,
-        scenarioEquilibre,
-        scenarioCroissance,
-        scenarioDynamique
-      ];
-
-      setScenarios(nouveauxScenarios);
+      setScenarios([scenarioCash, scenarioOptimise]);
       setIsLoading(false);
-    }, 7000); // Délai de 7 secondes
+    }, 2000);
   };
 
   const calculerScenario = (
@@ -143,11 +135,12 @@ function App() {
     tauxRendement: number,
     capitalInitial: number,
     duree: number,
-    fraisEntree: number
+    fraisEntree: number,
+    gainFiscal: number = 0
   ): SimulationScenario => {
-    const capitalApresFreais = capitalInitial * (1 - fraisEntree);
+    const capitalApresFrais = capitalInitial * (1 - fraisEntree);
     const evolutionCapital = Array.from({ length: duree + 1 }, (_, i) => {
-      let capitalCourant = capitalApresFreais;
+      let capitalCourant = capitalApresFrais;
       for (let annee = 0; annee < i; annee++) {
         capitalCourant += capitalCourant * tauxRendement;
       }
@@ -157,8 +150,8 @@ function App() {
       };
     });
 
-    const capitalFinal = evolutionCapital[evolutionCapital.length - 1].capital;
-    const interetsCumules = capitalFinal - capitalApresFreais;
+    let capitalFinal = evolutionCapital[evolutionCapital.length - 1].capital + gainFiscal;
+    const interetsCumules = capitalFinal - capitalApresFrais;
 
     return {
       nom,
@@ -173,7 +166,7 @@ function App() {
     };
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -205,23 +198,61 @@ function App() {
         </Box>
         
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange}
-            sx={{
-              '& .MuiTab-root': {
-                fontSize: '1rem',
-                textTransform: 'none',
-              }
-            }}
-          >
-            <Tab label="Présentation" />
-            <Tab label="Simulation" />
-            <Tab label="Configuration" />
-            <Tab label="Recherche des avoirs LPP" />
-            <Tab label="Portefeuilles" />
-            <Tab label="Rente AVS/LPP" />
-          </Tabs>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Tabs 
+              value={activeTab} 
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              sx={{
+                flexGrow: 1,
+                '& .MuiTab-root': {
+                  fontSize: '0.9rem',
+                  textTransform: 'none',
+                  minWidth: 'auto',
+                  px: 2,
+                },
+                '& .MuiTabs-scrollButtons': {
+                  '&.Mui-disabled': {
+                    opacity: 0.3,
+                  },
+                },
+              }}
+            >
+              <Tab label="Présentation" />
+              <Tab label="Nos Offres" />
+              <Tab label="Simulation" />
+              <Tab label="Configuration" />
+              <Tab label="Recherche des avoirs LPP" />
+              <Tab label="Portefeuilles" />
+              <Tab label="Rente AVS/LPP" />
+              <Tab label="Assurances Complémentaires" />
+              <Tab label="3ème Pilier" />
+            </Tabs>
+            
+            {/* Navigation rapide */}
+            <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
+              <Tooltip title="Premier onglet">
+                <IconButton 
+                  onClick={() => setActiveTab(0)}
+                  disabled={activeTab === 0}
+                  size="small"
+                >
+                  <FirstPageIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Dernier onglet">
+                <IconButton 
+                  onClick={() => setActiveTab(8)}
+                  disabled={activeTab === 8}
+                  size="small"
+                >
+                  <LastPageIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
         </Box>
 
         <TabPanel value={activeTab} index={0}>
@@ -229,6 +260,10 @@ function App() {
         </TabPanel>
 
         <TabPanel value={activeTab} index={1}>
+            <OffresCommerciales />
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={2}>
           <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
             <Typography variant="h5" gutterBottom>
               Paramètres de simulation
@@ -289,11 +324,8 @@ function App() {
             <>
               <TableauComparatif 
                 scenarios={scenarios} 
-                age={age}
-                ageMax={CONSTANTS.AGE_MAX}
                 capitalInitial={parseFloat(capital.replace(/[^0-9.-]+/g, ''))}
                 profilSelectionne={profilSelectionne}
-                tauxRendement={tauxRendement}
               />
               <GraphiqueEvolution 
                 scenarios={scenarios} 
@@ -345,14 +377,14 @@ function App() {
           )}
         </TabPanel>
 
-        <TabPanel value={activeTab} index={2}>
+        <TabPanel value={activeTab} index={3}>
           <ConfigurationTaux
             tauxActuels={tauxRendement}
             onTauxChange={handleTauxChange}
           />
         </TabPanel>
 
-        <TabPanel value={activeTab} index={3}>
+        <TabPanel value={activeTab} index={4}>
           <Paper 
             elevation={3} 
             sx={{ 
@@ -401,12 +433,20 @@ function App() {
           </Paper>
         </TabPanel>
 
-          <TabPanel value={activeTab} index={4}>
+          <TabPanel value={activeTab} index={5}>
             <PortefeuillesPartenaires />
           </TabPanel>
 
-          <TabPanel value={activeTab} index={5}>
+          <TabPanel value={activeTab} index={6}>
             <RenteEtTroisiemePillier />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={7}>
+            <ComparateurAssurancesComplementaires />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={8}>
+            <SimulateurPilier3Wizard />
           </TabPanel>
       </Box>
       </Container>

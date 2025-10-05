@@ -30,18 +30,8 @@ import { alpha } from '@mui/material/styles';
 
 interface TableauComparatifProps {
   scenarios: SimulationScenario[];
-  capitalInitial: number;
-  age: number;
-  ageMax: number;
   profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
-  tauxRendement: {
-    CASH: number;
-    FAIBLE: number;
-    MOYEN: number;
-    ELEVE: number;
-    FRAIS_ENTREE_MARCHE: number;
-    FRAIS_ENTREE_SFA: number;
-  };
+  capitalInitial: number;
 }
 
 const MotionPaper = motion(Paper);
@@ -124,7 +114,7 @@ const rightCardVariants: Variants = {
   }
 };
 
-export default function TableauComparatif({ scenarios, capitalInitial, age, ageMax, profilSelectionne, tauxRendement }: TableauComparatifProps) {
+export default function TableauComparatif({ scenarios, profilSelectionne, capitalInitial }: TableauComparatifProps) {
   const theme = useTheme();
   const [nombreChangements, setNombreChangements] = useState<number>(0);
   const [showChangements, setShowChangements] = useState<boolean>(false);
@@ -158,20 +148,8 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
     }).format(value);
   };
 
-  // Filtrer les scénarios pour n'afficher que le Compte rémunéré et le profil sélectionné
   const scenarioCash = scenarios.find(s => s.nom === 'Compte rémunéré');
-  const scenarioSelectionne = scenarios.find(s => {
-    switch(profilSelectionne) {
-      case 'EQUILIBRE':
-        return s.nom === 'Allier sécurité et rendement';
-      case 'CROISSANCE':
-        return s.nom === 'Faire croître mon capital';
-      case 'DYNAMIQUE':
-        return s.nom === 'Placement dynamique';
-      default:
-        return false;
-    }
-  });
+  const scenarioSelectionne = scenarios.find(s => s.nom !== 'Compte rémunéré');
 
   const scenariosAffichés = [scenarioCash, scenarioSelectionne].filter(s => s !== undefined) as SimulationScenario[];
 
@@ -184,9 +162,11 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
   const calculerDifferences = () => {
     if (!scenarioCash || !scenarioSelectionne) return null;
 
+    const capitalInitial = scenarioCash.resultat.capitalFinal > 0 ? (scenarioCash.resultat.capitalFinal / ((1 + scenarioCash.tauxRendement)**35)) : 100000
+
     const interetsCumules = scenarioSelectionne.resultat.interetsCumules;
-    const fraisEntreeMarche = capitalInitial * tauxRendement.FRAIS_ENTREE_MARCHE;
-    const fraisEntreeSFA = capitalInitial * tauxRendement.FRAIS_ENTREE_SFA;
+    const fraisEntreeMarche = scenarioSelectionne.resultat.fraisEntree * 2;
+    const fraisEntreeSFA = scenarioSelectionne.resultat.fraisEntree;
     const fraisEntreeSFAPlafonne = Math.min(fraisEntreeSFA, 12000);
     const fraisChangementFondation = nombreChangements * (capitalInitial * 0.03);
     const fraisChangementFondationSFA = 0;
@@ -263,52 +243,33 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
           >
             Comparatif des scénarios
           </MotionTypography>
-          <MotionTypography 
-            variant="subtitle1"
-            sx={{ 
-              color: theme.palette.text.secondary,
-            }}
-          >
-            Durée de placement maximum : {ageMax - age} ans
-          </MotionTypography>
         </Box>
         <TableContainer>
           <Table>
             <TableHead>
-              <MotionTableRow>
-                <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Scénario</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Taux de rendement</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Capital initial</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Capital final</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Intérêts cumulés</TableCell>
-              </MotionTableRow>
+              <TableRow>
+                <TableCell>Scénario</TableCell>
+                <TableCell align="right">Taux de rendement</TableCell>
+                <TableCell align="right">Capital initial</TableCell>
+                <TableCell align="right">Capital final</TableCell>
+                <TableCell align="right">Intérêts cumulés</TableCell>
+              </TableRow>
             </TableHead>
             <TableBody>
-              {scenariosAffichés.map((scenario, index) => (
+              {scenariosAffichés.map((scenario) => (
                 <MotionTableRow 
                   key={scenario.nom}
-                  custom={index}
-                  hover
-                  sx={{ 
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                      transform: 'scale(1.01)',
-                    }
+                  variants={rowVariants}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 }
                   }}
                 >
-                  <TableCell 
-                    component="th" 
-                    scope="row"
-                    sx={{ 
-                      fontWeight: 500,
-                      color: scenario.nom === 'Compte rémunéré' ? theme.palette.text.primary : theme.palette.primary.main
-                    }}
-                  >
-                    {scenario.nom}
+                  <TableCell component="th" scope="row">
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {scenario.nom}
+                    </Typography>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="right" sx={{ fontWeight: 500 }}>
                     {formatPercentage(scenario.tauxRendement)}
                   </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 500 }}>
@@ -317,13 +278,7 @@ export default function TableauComparatif({ scenarios, capitalInitial, age, ageM
                   <TableCell align="right" sx={{ fontWeight: 500 }}>
                     {formatCurrency(scenario.resultat.capitalFinal)}
                   </TableCell>
-                  <TableCell 
-                    align="right"
-                    sx={{ 
-                      fontWeight: 500,
-                      color: getValueColor(scenario.resultat.interetsCumules)
-                    }}
-                  >
+                  <TableCell align="right" sx={{ color: getValueColor(scenario.resultat.interetsCumules), fontWeight: 'bold' }}>
                     {formatCurrency(scenario.resultat.interetsCumules)}
                   </TableCell>
                 </MotionTableRow>

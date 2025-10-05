@@ -4,6 +4,10 @@ import {
   Paper,
   Typography,
   Box,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import CustomButton from './CustomButton';
 import { SimulationInput } from '../types/simulation';
@@ -131,6 +135,22 @@ export default function FormulaireSimulation({
                 endAdornment: '%',
               }}
             />
+          </Box>
+          <Box sx={{ gridColumn: '1 / -1' }}>
+            <FormControl fullWidth>
+              <InputLabel id="offre-label">Offre</InputLabel>
+              <Select
+                labelId="offre-label"
+                value={input.offreSelectionnee || 'Standard'}
+                label="Offre"
+                onChange={e => onInputChange({ ...input, offreSelectionnee: e.target.value })}
+              >
+                <MenuItem value="Standard">Standard</MenuItem>
+                <MenuItem value="Confort">Confort</MenuItem>
+                <MenuItem value="Complète">Complète</MenuItem>
+                <MenuItem value="Premium">Premium</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
           <Box sx={{ gridColumn: '1 / -1' }}>
             <CustomButton

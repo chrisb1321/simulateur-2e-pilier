@@ -1,8 +1,11 @@
+export type ProfilType = 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
+
 export interface SimulationInput {
   age: number;
   capital: number;
   tauxRendementBanque: number;
   rabaisPartenaire: number;
+  offreSelectionnee?: string;
 }
 
 export interface SimulationResult {

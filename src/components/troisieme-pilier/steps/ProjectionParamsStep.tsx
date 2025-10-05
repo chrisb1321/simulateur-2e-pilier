@@ -51,7 +51,7 @@ const ProjectionParamsStep: React.FC<ProjectionParamsStepProps> = ({
                   Revenu actuel
                 </Typography>
                 <Typography variant="h6" color="primary">
-                  {(data.annualIncome / 12).toLocaleString('fr-CH')} CHF/mois
+                  {Math.round(data.annualIncome / 12).toLocaleString('fr-CH')} CHF/mois
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -71,7 +71,7 @@ const ProjectionParamsStep: React.FC<ProjectionParamsStepProps> = ({
                 </Typography>
                 <Typography variant="h6" color="error.main">
                   {data.targetRetirementIncome > (data.annualIncome / 12) ? '+' : ''}
-                  {(data.targetRetirementIncome - (data.annualIncome / 12)).toLocaleString('fr-CH')} CHF/mois
+                  {Math.round(data.targetRetirementIncome - (data.annualIncome / 12)).toLocaleString('fr-CH')} CHF/mois
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   ({Math.round(((data.annualIncome / 12) - data.targetRetirementIncome) / (data.annualIncome / 12) * 100)}% de baisse)

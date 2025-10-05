@@ -7,6 +7,13 @@ import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CustomButton from '../CustomButton';
+import AssuranceCards from './AssuranceCards';
+import HospitalizationCards from './HospitalizationCards';
+import AmbulatoryCards from './AmbulatoryCards';
+import DentalCards from './DentalCards';
+import AssuranceExplanation from './AssuranceExplanation';
+import AssuranceDetails from './AssuranceDetails';
+import LamalDetails from './LamalDetails';
 import { AssuranceComplementaireAmbulatoire, CategorieAmbulatoire, DoublonVerification } from '../../types/assurancesComplementaires';
 import { CATEGORIES_AMBULATOIRES, ASSURANCES_AMBULATOIRES } from '../../data/assurancesComplementairesAmbulatoires';
 
@@ -15,6 +22,9 @@ export default function ComparateurAssurancesComplementaires() {
   const [assuranceSelectionnee, setAssuranceSelectionnee] = useState<AssuranceComplementaireAmbulatoire | null>(null);
   const [doublonsActifs, setDoublonsActifs] = useState<DoublonVerification[]>([]);
   const [doublonsExpanded, setDoublonsExpanded] = useState<{ [key: string]: boolean }>({});
+  const [showCards, setShowCards] = useState(true);
+  const [currentView, setCurrentView] = useState<'main' | 'explanation' | 'details' | 'hospitalization' | 'ambulatory' | 'dental' | 'detailed' | 'lamal'>('explanation');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const theme = useTheme();
 
@@ -65,11 +75,107 @@ export default function ComparateurAssurancesComplementaires() {
     }
   };
 
+  const handleCardClick = (cardType: string) => {
+    console.log('Carte cliquée:', cardType);
+    
+    if (cardType === 'hospitalisation') {
+      setCurrentView('hospitalization');
+    } else if (cardType === 'ambulatoires') {
+      setCurrentView('ambulatory');
+    } else if (cardType === 'dentaire') {
+      setCurrentView('dental');
+    } else {
+      // Pour les autres types, on bascule vers la vue détaillée
+      setCurrentView('detailed');
+      setShowCards(false);
+    }
+  };
+
+  const handleMainCardClick = (cardType: string) => {
+    if (cardType === 'hospitalisation') {
+      setCurrentView('hospitalization');
+    } else if (cardType === 'ambulatoires') {
+      setCurrentView('ambulatory');
+    } else if (cardType === 'dentaire') {
+      setCurrentView('dental');
+    } else {
+      // Pour les autres types, on bascule vers la vue détaillée
+      setCurrentView('detailed');
+      setShowCards(false);
+    }
+  };
+
+  const handleExplanationNext = (categories: string[]) => {
+    setSelectedCategories(categories);
+    console.log('Catégories sélectionnées:', categories);
+    // Ici, on pourrait rediriger vers une page de comparatif ou sauvegarder les sélections
+    alert(`Sélection enregistrée ! Catégories choisies : ${categories.join(', ')}`);
+  };
+
+  const handleBackToMain = () => {
+    setCurrentView('explanation');
+  };
+
+  const handleShowCards = () => {
+    setCurrentView('details');
+  };
+
+  const handleSelectType = (type: 'lamal' | 'complementaire') => {
+    if (type === 'complementaire') {
+      setCurrentView('main');
+    } else {
+      // Pour LAMal, on redirige vers la page de détails LAMal
+      setCurrentView('lamal');
+    }
+  };
+
+  const handleShowLamalDetails = () => {
+    setCurrentView('lamal');
+  };
+
+  // Gestion des différentes vues
+  if (currentView === 'explanation') {
+    return <AssuranceExplanation onBack={handleBackToMain} onShowCards={handleShowCards} />;
+  }
+
+  if (currentView === 'details') {
+    return <AssuranceDetails onBack={handleBackToMain} onSelectType={handleSelectType} onShowLamalDetails={handleShowLamalDetails} />;
+  }
+
+  if (currentView === 'hospitalization') {
+    return <HospitalizationCards onBack={handleBackToMain} />;
+  }
+
+  if (currentView === 'ambulatory') {
+    return <AmbulatoryCards onBack={handleBackToMain} />;
+  }
+
+  if (currentView === 'dental') {
+    return <DentalCards onBack={handleBackToMain} />;
+  }
+
+  if (currentView === 'lamal') {
+    return <LamalDetails onBack={handleBackToMain} />;
+  }
+
+  if (currentView === 'main') {
+    return <AssuranceCards onCardClick={handleCardClick} onBack={handleBackToMain} />;
+  }
+
   return (
     <Box sx={{ p: 4, maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
-        Assurances Complémentaires Ambulatoires
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h4" component="h1" sx={{ flexGrow: 1 }}>
+          Assurances Complémentaires Ambulatoires
+        </Typography>
+        <Button 
+          variant="outlined" 
+          onClick={() => setShowCards(true)}
+          sx={{ ml: 2 }}
+        >
+          Retour aux catégories
+        </Button>
+      </Box>
 
       {/* Navigation par catégories */}
       <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>

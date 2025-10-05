@@ -12,10 +12,10 @@ import {
   Alert,
   CircularProgress,
   Fade,
-  Slide,
-  useTheme
+  Slide
 } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import BackButton from '../../BackButton';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { motion } from 'framer-motion';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
@@ -37,7 +37,6 @@ const SimulationResultsStep: React.FC<SimulationResultsStepProps> = ({
   onBack,
   onReset
 }) => {
-  const theme = useTheme();
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     nom: '',
     prenom: '',
@@ -87,11 +86,18 @@ const SimulationResultsStep: React.FC<SimulationResultsStepProps> = ({
   }
 
   // Préparation des données pour le graphique
-  const chartData = results.projectionData.map(d => ({
-    age: d.age,
-    capital: d.savings,
-    contribution: d.age === data.age ? 0 : (d.age - data.age) * data.monthlyContribution * 12
-  }));
+  const chartData = results.projectionData.map((d) => {
+    const yearsElapsed = d.age - data.age;
+    const annualTaxSavings = Math.min(data.monthlyContribution * 12, 7258) * 0.25; // Économie fiscale annuelle
+    const cumulativeTaxSavings = Math.max(0, yearsElapsed * annualTaxSavings);
+    
+    return {
+      age: d.age,
+      capital: d.savings,
+      contribution: d.age === data.age ? 0 : (d.age - data.age) * data.monthlyContribution * 12,
+      economieFiscale: cumulativeTaxSavings
+    };
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -465,7 +471,10 @@ const SimulationResultsStep: React.FC<SimulationResultsStepProps> = ({
                     tick={{ fill: '#666' }}
                   />
                   <Tooltip 
-                    formatter={(value: number) => [Pilier3Service.formatCurrency(value), 'Capital']}
+                    formatter={(value: number) => [
+                      Pilier3Service.formatCurrency(value), 
+                      'Capital total'
+                    ]}
                     labelFormatter={(label) => `Âge: ${label} ans`}
                     contentStyle={{
                       backgroundColor: 'white',
@@ -485,6 +494,16 @@ const SimulationResultsStep: React.FC<SimulationResultsStepProps> = ({
                   />
                 </AreaChart>
               </ResponsiveContainer>
+            </Box>
+            
+            {/* Légende du graphique */}
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ width: 16, height: 16, backgroundColor: '#1976d2', borderRadius: '50%' }} />
+                <Typography variant="body2" color="text.secondary">
+                  Capital total
+                </Typography>
+              </Box>
             </Box>
           </CardContent>
         </Card>
@@ -606,9 +625,7 @@ const SimulationResultsStep: React.FC<SimulationResultsStepProps> = ({
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Button onClick={onBack} variant="outlined">
-                Retour
-              </Button>
+              <BackButton onClick={onBack} />
               <Button 
                 type="submit" 
                 variant="contained" 

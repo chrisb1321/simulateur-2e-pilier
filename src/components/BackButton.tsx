@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface BackButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   label?: string;
   sx?: object;
 }
@@ -13,11 +13,20 @@ const BackButton: React.FC<BackButtonProps> = ({
   label = 'Retour',
   sx = {}
 }) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      // Utiliser l'historique du navigateur par défaut
+      window.history.back();
+    }
+  };
+
   return (
     <Button
       variant="outlined"
       startIcon={<ArrowBackIcon />}
-      onClick={onClick}
+      onClick={handleClick}
       sx={{
         borderColor: '#1976d2',
         color: '#1976d2',

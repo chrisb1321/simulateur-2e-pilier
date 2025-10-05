@@ -25,6 +25,7 @@ export default function ComparateurAssurancesComplementaires() {
   const [showCards, setShowCards] = useState(true);
   const [currentView, setCurrentView] = useState<'main' | 'explanation' | 'details' | 'hospitalization' | 'ambulatory' | 'dental' | 'detailed' | 'lamal'>('explanation');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [navigationHistory, setNavigationHistory] = useState<string[]>(['explanation']);
 
   const theme = useTheme();
 
@@ -79,28 +80,28 @@ export default function ComparateurAssurancesComplementaires() {
     console.log('Carte cliquée:', cardType);
     
     if (cardType === 'hospitalisation') {
-      setCurrentView('hospitalization');
+      navigateToView('hospitalization');
     } else if (cardType === 'ambulatoires') {
-      setCurrentView('ambulatory');
+      navigateToView('ambulatory');
     } else if (cardType === 'dentaire') {
-      setCurrentView('dental');
+      navigateToView('dental');
     } else {
       // Pour les autres types, on bascule vers la vue détaillée
-      setCurrentView('detailed');
+      navigateToView('detailed');
       setShowCards(false);
     }
   };
 
   const handleMainCardClick = (cardType: string) => {
     if (cardType === 'hospitalisation') {
-      setCurrentView('hospitalization');
+      navigateToView('hospitalization');
     } else if (cardType === 'ambulatoires') {
-      setCurrentView('ambulatory');
+      navigateToView('ambulatory');
     } else if (cardType === 'dentaire') {
-      setCurrentView('dental');
+      navigateToView('dental');
     } else {
       // Pour les autres types, on bascule vers la vue détaillée
-      setCurrentView('detailed');
+      navigateToView('detailed');
       setShowCards(false);
     }
   };
@@ -112,25 +113,44 @@ export default function ComparateurAssurancesComplementaires() {
     alert(`Sélection enregistrée ! Catégories choisies : ${categories.join(', ')}`);
   };
 
+  const navigateToView = (newView: string) => {
+    setNavigationHistory(prev => [...prev, newView]);
+    setCurrentView(newView as any);
+  };
+
   const handleBackToMain = () => {
-    setCurrentView('explanation');
+    if (navigationHistory.length > 1) {
+      // Retourner à la vue précédente dans l'historique
+      const newHistory = [...navigationHistory];
+      newHistory.pop(); // Supprimer la vue actuelle
+      const previousView = newHistory[newHistory.length - 1];
+      setNavigationHistory(newHistory);
+      setCurrentView(previousView as any);
+    } else {
+      // Si c'est la première page, utiliser l'historique du navigateur
+      window.history.back();
+    }
   };
 
   const handleShowCards = () => {
-    setCurrentView('details');
+    navigateToView('details');
   };
 
   const handleSelectType = (type: 'lamal' | 'complementaire') => {
     if (type === 'complementaire') {
-      setCurrentView('main');
+      navigateToView('main');
     } else {
       // Pour LAMal, on redirige vers la page de détails LAMal
-      setCurrentView('lamal');
+      navigateToView('lamal');
     }
   };
 
   const handleShowLamalDetails = () => {
-    setCurrentView('lamal');
+    navigateToView('lamal');
+  };
+
+  const handleNextToComplementary = () => {
+    navigateToView('main');
   };
 
   // Gestion des différentes vues
@@ -155,7 +175,7 @@ export default function ComparateurAssurancesComplementaires() {
   }
 
   if (currentView === 'lamal') {
-    return <LamalDetails onBack={handleBackToMain} />;
+    return <LamalDetails onBack={handleBackToMain} onNext={handleNextToComplementary} />;
   }
 
   if (currentView === 'main') {

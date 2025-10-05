@@ -19,7 +19,8 @@ import {
   Add as OtherIcon,
   CheckCircle as CheckCircleIcon,
   ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon
+  ExpandLess as ExpandLessIcon,
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BackButton from '../BackButton';
@@ -181,47 +182,83 @@ const AssuranceCards: React.FC<AssuranceCardsProps> = ({ onCardClick, onBack }) 
         </Box>
       )}
 
-      <Typography 
-        variant="h4" 
-        component="h1" 
-        gutterBottom 
-        align="center" 
-        sx={{ 
-          mb: 4,
-          fontWeight: 600,
-          color: '#1976d2',
-          background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}
+      {/* Information importante sur les conditions d'accès */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
       >
-        Assurances Complémentaires
-      </Typography>
-
-      <Grid container spacing={3}>
-        {assurances.map((assurance, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <AssuranceCard
-              title={assurance.title}
-              description={assurance.description}
-              icon={assurance.icon}
-              onAccess={assurance.onAccess}
-            />
-          </Grid>
-        ))}
-      </Grid>
+        <Paper 
+          elevation={2} 
+          sx={{ 
+            mb: 4,
+            borderRadius: 3,
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #fff3e0 0%, #ffffff 100%)',
+            border: '2px solid #ff9800'
+          }}
+        >
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'flex-start',
+            gap: 2,
+            p: 3,
+            background: 'linear-gradient(45deg, #ff9800 30%, #ffc107 90%)',
+            color: 'white'
+          }}>
+            <Box sx={{ 
+              p: 1, 
+              borderRadius: '50%', 
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              flexShrink: 0,
+              mt: 0.5
+            }}>
+              <WarningIcon sx={{ fontSize: 24 }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h6" sx={{ 
+                fontWeight: 600, 
+                mb: 2,
+                color: 'white'
+              }}>
+                Conditions d'accès importantes
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: 'white',
+                lineHeight: 1.6,
+                mb: 2
+              }}>
+                Les assurances complémentaires sont réservées aux personnes en bonne santé. Un questionnaire médical détaillé sera requis lors de votre demande.
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: 'white',
+                lineHeight: 1.6,
+                mb: 2
+              }}>
+                L'assureur évaluera votre dossier médical et se réserve le droit d'accepter ou de refuser votre demande d'assurance complémentaire.
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: 'white',
+                lineHeight: 1.6,
+                fontWeight: 600
+              }}>
+                Les affections préexistantes seront systématiquement exclues de la couverture.
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </motion.div>
 
       {/* Section Prestations incluses */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
       >
         <Paper 
           elevation={2} 
           sx={{ 
-            mt: 4,
+            mb: 4,
             borderRadius: 3,
             overflow: 'hidden',
             background: 'linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%)'
@@ -285,6 +322,21 @@ const AssuranceCards: React.FC<AssuranceCardsProps> = ({ onCardClick, onBack }) 
           </Collapse>
         </Paper>
       </motion.div>
+
+      <Box sx={{ mt: 4 }} />
+
+      <Grid container spacing={3}>
+        {assurances.map((assurance, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <AssuranceCard
+              title={assurance.title}
+              description={assurance.description}
+              icon={assurance.icon}
+              onAccess={assurance.onAccess}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   );
 };

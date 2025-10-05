@@ -28,9 +28,10 @@ import BackButton from '../BackButton';
 
 interface LamalDetailsProps {
   onBack: () => void;
+  onNext?: () => void;
 }
 
-const LamalDetails: React.FC<LamalDetailsProps> = ({ onBack }) => {
+const LamalDetails: React.FC<LamalDetailsProps> = ({ onBack, onNext }) => {
   const [selectedDeductible, setSelectedDeductible] = useState<string>('300');
   const [selectedChildDeductible, setSelectedChildDeductible] = useState<string>('100');
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
@@ -873,18 +874,11 @@ const LamalDetails: React.FC<LamalDetailsProps> = ({ onBack }) => {
                 ))}
               </Grid>
               
-              {/* Lien vers les assurances complémentaires */}
+              {/* Bouton suivant */}
               <Box sx={{ 
                 mt: 4, 
-                textAlign: 'center',
-                p: 3,
-                backgroundColor: 'rgba(25,118,210,0.05)',
-                borderRadius: 2,
-                border: '1px solid rgba(25,118,210,0.1)'
+                textAlign: 'center'
               }}>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                  Vous souhaitez combler ces lacunes avec une assurance complémentaire ?
-                </Typography>
                 <Button
                   variant="contained"
                   size="large"
@@ -903,9 +897,9 @@ const LamalDetails: React.FC<LamalDetailsProps> = ({ onBack }) => {
                     },
                     transition: 'all 0.3s ease'
                   }}
-                  onClick={() => window.location.href = '/assurances-complementaires'}
+                  onClick={() => onNext ? onNext() : window.location.href = '/assurances-complementaires'}
                 >
-                  Découvrir les assurances complémentaires
+                  Suivant
                 </Button>
               </Box>
             </CardContent>

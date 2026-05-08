@@ -5,7 +5,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import TableauComparatif from './components/TableauComparatif'
 import GraphiqueEvolution from './components/GraphiqueEvolution'
 import ConfigurationTaux from './components/ConfigurationTaux'
-import { SimulationScenario } from './types/simulation'
+import { SimulationScenario, ProfilType } from './types/simulation'
 import logo from './assets/images/logo.png'
 import LoadingSimulation from './components/LoadingSimulation'
 import { useTheme } from '@mui/material/styles'
@@ -23,10 +23,12 @@ const CONSTANTS = {
   AGE_MIN: 18,
   AGE_MAX: 65,
   TAUX_RENDEMENT: {
-    CASH: 0.004,     // 0.4%
-    EQUILIBRE: 0.02,    // 2%
-    CROISSANCE: 0.032,  // 3.2%
-    DYNAMIQUE: 0.04,    // 4%
+    CASH: 0.004,        // 0.4 %
+    SECURITE: 0.02,     // 2 %   (R1)
+    EQUILIBRE: 0.032,   // 3.2 % (R2)
+    CROISSANCE: 0.041,  // 4.1 % (R3)
+    DYNAMIQUE: 0.04,    // 4 %   (R4)
+    ACTIONS_100: 0.064, // 6.4 % (R5)
   },
   TAUX_RENDEMENT_BANQUE_DEFAUT: 0.032, // 3.2%
   RABAIS_PARTENAIRE: 50, // 50%
@@ -34,8 +36,6 @@ const CONSTANTS = {
   RABAIS_MAX: 100,
   FRAIS_ENTREE: 0.03,
 };
-
-type ProfilType = 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -79,12 +79,14 @@ function App() {
   const [scenarios, setScenarios] = useState<SimulationScenario[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tauxRendement, setTauxRendement] = useState({
-    CASH: CONSTANTS.TAUX_RENDEMENT.CASH,
-    FAIBLE: CONSTANTS.TAUX_RENDEMENT.EQUILIBRE,
-    MOYEN: CONSTANTS.TAUX_RENDEMENT.CROISSANCE,
-    ELEVE: CONSTANTS.TAUX_RENDEMENT.DYNAMIQUE,
+    CASH:        CONSTANTS.TAUX_RENDEMENT.CASH,
+    SECURITE:    CONSTANTS.TAUX_RENDEMENT.SECURITE,
+    FAIBLE:      CONSTANTS.TAUX_RENDEMENT.EQUILIBRE,
+    MOYEN:       CONSTANTS.TAUX_RENDEMENT.CROISSANCE,
+    ELEVE:       CONSTANTS.TAUX_RENDEMENT.DYNAMIQUE,
+    ACTIONS_100: CONSTANTS.TAUX_RENDEMENT.ACTIONS_100,
     FRAIS_ENTREE_MARCHE: CONSTANTS.FRAIS_ENTREE,
-    FRAIS_ENTREE_SFA: CONSTANTS.FRAIS_ENTREE * 0.5,
+    FRAIS_ENTREE_SFA:    CONSTANTS.FRAIS_ENTREE * 0.5,
   });
   const theme = useTheme();
   const [offreSelectionnee] = useState<string>('Standard');
@@ -116,9 +118,18 @@ function App() {
         0
       );
 
+      const tauxParProfil: Record<ProfilType, keyof Pick<typeof tauxRendement, 'SECURITE' | 'FAIBLE' | 'MOYEN' | 'ELEVE' | 'ACTIONS_100'>> = {
+        SECURITE: 'SECURITE',
+        EQUILIBRE: 'FAIBLE',
+        CROISSANCE: 'MOYEN',
+        DYNAMIQUE: 'ELEVE',
+        ACTIONS_100: 'ACTIONS_100',
+      };
+      const tauxOptimise = tauxRendement[tauxParProfil[profilSelectionne]];
+
       const scenarioOptimise = calculerScenario(
         `Simulation avec offre ${offre}`,
-        tauxRendement.FAIBLE,
+        tauxOptimise,
         capitalInitial,
         anneesRestantes,
         fraisEntreeOptimises,
@@ -301,9 +312,11 @@ function App() {
                     label="Profil d'investissement"
                     onChange={(e) => setProfilSelectionne(e.target.value as ProfilType)}
                   >
+                    <MenuItem value="SECURITE">Sécurité</MenuItem>
                     <MenuItem value="EQUILIBRE">Allier sécurité et rendement</MenuItem>
                     <MenuItem value="CROISSANCE">Faire croître mon capital</MenuItem>
                     <MenuItem value="DYNAMIQUE">Placement dynamique</MenuItem>
+                    <MenuItem value="ACTIONS_100">Placement 100 % actions</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>

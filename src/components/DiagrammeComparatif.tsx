@@ -146,12 +146,16 @@ export default function DiagrammeComparatif({
 
   const getDocumentPath = () => {
     switch(profilInvestissement) {
-      case 'Placement dynamique':
-        return '/Placement dynamique - Présentation.pdf';
-      case 'Faire croître mon capital':
-        return '/Faire croître mon capital - Présentation.pdf';
+      case 'Sécurité':
+        return '/documents/Sécurité - Présentation.pdf';
       case 'Allier sécurité et rendement':
-        return '/Allier sécurité et rendement - Présentation.pdf';
+        return '/documents/Allier sécurité et rendement - Présentation.pdf';
+      case 'Faire croître mon capital':
+        return '/documents/Faire croître mon capital - Présentation.pdf';
+      case 'Placement dynamique':
+        return '/documents/Placement dynamique - Présentation.pdf';
+      case 'Placement 100 % actions':
+        return '/documents/Placement 100pct actions - Présentation.pdf';
       default:
         return '';
     }

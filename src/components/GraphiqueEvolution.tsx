@@ -17,11 +17,11 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BusinessIcon from '@mui/icons-material/Business';
 import SecurityIcon from '@mui/icons-material/Security';
-import { SimulationScenario } from '../types/simulation';
+import { SimulationScenario, ProfilType } from '../types/simulation';
 
 interface GraphiqueEvolutionProps {
   scenarios: SimulationScenario[];
-  profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
+  profilSelectionne: ProfilType;
 }
 
 export default function GraphiqueEvolution({ scenarios, profilSelectionne }: GraphiqueEvolutionProps) {
@@ -70,10 +70,13 @@ export default function GraphiqueEvolution({ scenarios, profilSelectionne }: Gra
   };
 
   const getLineStyle = (scenarioNom: string) => {
-    const isSelected = 
+    const isSelected =
+      scenarioNom.startsWith('Simulation avec offre') ||
       (scenarioNom === 'Allier sécurité et rendement' && profilSelectionne === 'EQUILIBRE') ||
       (scenarioNom === 'Faire croître mon capital' && profilSelectionne === 'CROISSANCE') ||
-      (scenarioNom === 'Placement dynamique' && profilSelectionne === 'DYNAMIQUE');
+      (scenarioNom === 'Placement dynamique' && profilSelectionne === 'DYNAMIQUE') ||
+      (scenarioNom === 'Sécurité' && profilSelectionne === 'SECURITE') ||
+      (scenarioNom === 'Placement 100 % actions' && profilSelectionne === 'ACTIONS_100');
 
     const color = getLineColor(scenarioNom);
     

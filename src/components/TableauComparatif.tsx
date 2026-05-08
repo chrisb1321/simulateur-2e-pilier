@@ -23,14 +23,14 @@ import {
   InputLabel,
 } from '@mui/material';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { SimulationScenario } from '../types/simulation';
+import { SimulationScenario, ProfilType } from '../types/simulation';
 import { useState } from 'react';
 import DiagrammeComparatif from './DiagrammeComparatif';
 import { alpha } from '@mui/material/styles';
 
 interface TableauComparatifProps {
   scenarios: SimulationScenario[];
-  profilSelectionne: 'EQUILIBRE' | 'CROISSANCE' | 'DYNAMIQUE';
+  profilSelectionne: ProfilType;
   capitalInitial: number;
 }
 
@@ -632,9 +632,11 @@ export default function TableauComparatif({ scenarios, profilSelectionne, capita
                 fraisEntreeMarche={differences.fraisEntreeMarche}
                 fraisEntreeSFA={differences.fraisEntreeSFA}
                 profilInvestissement={
+                  profilSelectionne === 'SECURITE' ? 'Sécurité' :
                   profilSelectionne === 'EQUILIBRE' ? 'Allier sécurité et rendement' :
                   profilSelectionne === 'CROISSANCE' ? 'Faire croître mon capital' :
-                  profilSelectionne === 'DYNAMIQUE' ? 'Placement dynamique' : ''
+                  profilSelectionne === 'DYNAMIQUE' ? 'Placement dynamique' :
+                  profilSelectionne === 'ACTIONS_100' ? 'Placement 100 % actions' : ''
                 }
               />
             </motion.div>

@@ -9,9 +9,11 @@ import {
 interface ConfigurationTauxProps {
   tauxActuels: {
     CASH: number;
+    SECURITE: number;
     FAIBLE: number;
     MOYEN: number;
     ELEVE: number;
+    ACTIONS_100: number;
     FRAIS_ENTREE_MARCHE: number;
     FRAIS_ENTREE_SFA: number;
   };
@@ -61,6 +63,28 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
               marks={[
                 { value: 0, label: '0%' },
                 { value: 2, label: '2%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 4 }}>
+            <Typography gutterBottom>
+              Sécurité
+            </Typography>
+            <Slider
+              value={tauxActuels.SECURITE * 100}
+              onChange={handleChange('SECURITE')}
+              min={0}
+              max={5}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 2, label: '2%' },
+                { value: 5, label: '5%' },
               ]}
             />
           </Box>
@@ -124,6 +148,27 @@ export default function ConfigurationTaux({ tauxActuels, onTauxChange }: Configu
               marks={[
                 { value: 0, label: '0%' },
                 { value: 8, label: '8%' },
+              ]}
+            />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Box sx={{ mb: 4 }}>
+            <Typography gutterBottom>
+              Placement 100 % actions
+            </Typography>
+            <Slider
+              value={tauxActuels.ACTIONS_100 * 100}
+              onChange={handleChange('ACTIONS_100')}
+              min={0}
+              max={10}
+              step={0.1}
+              valueLabelDisplay="auto"
+              valueLabelFormat={formatPercentage}
+              marks={[
+                { value: 0, label: '0%' },
+                { value: 10, label: '10%' },
               ]}
             />
           </Box>

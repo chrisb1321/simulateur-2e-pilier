@@ -251,8 +251,8 @@ export default function TableauComparatif({ scenarios, profilSelectionne, capita
                 <TableCell>Scénario</TableCell>
                 <TableCell align="right">Taux de rendement</TableCell>
                 <TableCell align="right">Capital initial</TableCell>
-                <TableCell align="right">Capital final</TableCell>
                 <TableCell align="right">Intérêts cumulés</TableCell>
+                <TableCell align="right">Capital final</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -275,11 +275,11 @@ export default function TableauComparatif({ scenarios, profilSelectionne, capita
                   <TableCell align="right" sx={{ fontWeight: 500 }}>
                     {formatCurrency(capitalInitial)}
                   </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 500 }}>
-                    {formatCurrency(scenario.resultat.capitalFinal)}
-                  </TableCell>
                   <TableCell align="right" sx={{ color: getValueColor(scenario.resultat.interetsCumules), fontWeight: 'bold' }}>
                     {formatCurrency(scenario.resultat.interetsCumules)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 500 }}>
+                    {formatCurrency(scenario.resultat.capitalFinal)}
                   </TableCell>
                 </MotionTableRow>
               ))}
